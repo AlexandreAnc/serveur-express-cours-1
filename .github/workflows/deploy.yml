@@ -1,0 +1,31 @@
+name: Déploiement sur le VPS (avec PM2 + Nginx)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd "${{ secrets.APP_DIR }}"
+
+            git fetch origin
+            git reset --hard origin/main
+
+            npm ci --omit=dev
+
+            # Reload if exists, otherwise start
+            PORT=8080 pm2 reload serveur-express-cours-1 --update-env || PORT=8080 pm2 start ./bin/www --name serveur-express-cours-1
+            pm2 save
+
+            curl -I http://localhost:8080

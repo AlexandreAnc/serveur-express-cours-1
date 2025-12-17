@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<%- include('../layout/head', { title: 'Chat' }) %>
+</head>
+
+<body>
+    <%- include('../layout/header') %>
+
+    <main class="container">
+        <div class="chat-container">
+            <!-- En-tête du chat -->
+            <div class="chat-header">
+                <div class="chat-title-wrapper">
+                    <h2>💬 Chat</h2>
+                    <span class="user-count" id="user-count">0 connecté(s)</span>
+                </div>
+                <div class="pseudo-display">
+                    <span id="current-pseudo">Anonyme</span>
+                    <button class="change-pseudo-btn" onclick="openPseudoModal()">Changer</button>
+                </div>
+            </div>
+
+            <!-- Zone des messages -->
+            <div class="messages-container" id="messages-container">
+                <div class="empty-chat">
+                    Aucun message pour le moment. Soyez le premier à écrire ! 👋
+                </div>
+            </div>
+
+            <!-- Indicateur de frappe -->
+            <div class="typing-indicator" id="typing-indicator" style="display: none;"></div>
+
+            <!-- Zone de saisie -->
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="message-input" 
+                        class="chat-input" 
+                        placeholder="Tapez votre message..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                </div>
+                <button id="send-btn" class="send-btn" onclick="sendMessage()" disabled>
+                    Envoyer
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Message de rate limit -->
+    <div class="rate-limit-message" id="rate-limit-message"></div>
+
+    <!-- Modal pour choisir le pseudo -->
+    <div class="pseudo-modal" id="pseudo-modal">
+        <div class="pseudo-modal-content">
+            <h3>Choisir votre pseudo</h3>
+            <p>Entrez un nom d'utilisateur pour participer au chat</p>
+            <div class="pseudo-input-group">
+                <label for="pseudo-input">Pseudo</label>
+                <input 
+                    type="text" 
+                    id="pseudo-input" 
+                    placeholder="Votre pseudo..."
+                    maxlength="20"
+                    onkeydown="handlePseudoKeyDown(event)"
+                />
+            </div>
+            <div class="pseudo-modal-actions">
+                <button class="btn btn-secondary" onclick="closePseudoModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="savePseudo()">Valider</button>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../layout/footer') %>
+
+    <script>
+        let currentPseudo = localStorage.getItem('chatPseudo') || null;
+        let socket = null;
+        let canSendMessage = true;
+        let lastMessageTime = 0;
+        const MIN_MESSAGE_INTERVAL = 500; // Minimum 500ms entre deux messages (côté client)
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const messagesContainer = document.getElementById('messages-container');
+        const pseudoModal = document.getElementById('pseudo-modal');
+        const pseudoInput = document.getElementById('pseudo-input');
+
+        // Initialiser Socket.IO
+        function initSocket() {
+            socket = io();
+            
+            // Écouter l'événement quand un utilisateur rejoint
+            socket.on('user-joined', function(data) {
+                addSystemMessage(data.pseudo + ' vient de rejoindre le chat');
+            });
+            
+            // Écouter les nouveaux messages
+            socket.on('new-message', function(data) {
+                addMessageToChat(data.pseudo, data.message, data.pseudo === currentPseudo, data.timestamp);
+            });
+            
+            // Écouter les erreurs de rate limit
+            socket.on('rate-limit-exceeded', function(data) {
+                canSendMessage = false;
+                showRateLimitMessage(data.message, data.retryAfter);
+                
+                // Réactiver après le délai
+                setTimeout(function() {
+                    canSendMessage = true;
+                    hideRateLimitMessage();
+                }, data.retryAfter * 1000);
+            });
+            
+            // Écouter les utilisateurs en train d'écrire
+            socket.on('typing-users', function(data) {
+                updateTypingIndicator(data.users);
+            });
+            
+            // Écouter le nombre d'utilisateurs connectés
+            socket.on('user-count', function(data) {
+                updateUserCount(data.count);
+            });
+            
+            // Écouter la connexion
+            socket.on('connect', function() {
+                console.log('Connecté au serveur Socket.IO');
+                
+                // Si on a déjà un pseudo, rejoindre le chat immédiatement
+                if (currentPseudo) {
+                    socket.emit('join-chat', { pseudo: currentPseudo });
+                }
+            });
+            
+            // Écouter la déconnexion
+            socket.on('disconnect', function() {
+                console.log('Déconnecté du serveur Socket.IO');
+            });
+        }
+
+        // Gérer la déconnexion quand l'utilisateur quitte la page
+        window.addEventListener('beforeunload', function() {
+            if (socket && socket.connected) {
+                // Envoyer un événement de déconnexion avant de quitter
+                socket.emit('disconnect-user');
+                socket.disconnect();
+            }
+        });
+
+        // Gérer aussi l'événement unload pour être sûr
+        window.addEventListener('unload', function() {
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
+        });
+
+        // Initialiser Socket.IO au chargement
+        initSocket();
+
+        // Vérifier si un pseudo existe déjà
+        if (!currentPseudo) {
+            // Ouvrir automatiquement le modal au chargement si pas de pseudo
+            setTimeout(() => {
+                openPseudoModal();
+            }, 300);
+        } else {
+            updatePseudoDisplay(currentPseudo);
+        }
+
+        // Variables pour gérer le typing indicator
+        let typingTimeout = null;
+        let typingInterval = null;
+        let isTyping = false;
+        const TYPING_DELAY = 300; // Délai avant d'envoyer l'événement "typing" (300ms pour affichage rapide)
+        const TYPING_INTERVAL = 2000; // Renvoyer l'événement toutes les 2 secondes tant que l'utilisateur tape
+
+        // Gérer l'activation/désactivation du bouton d'envoi et l'indicateur de frappe
+        messageInput.addEventListener('input', function() {
+            const hasText = this.value.trim().length > 0;
+            sendBtn.disabled = !hasText || !currentPseudo;
+            
+            // Auto-resize du textarea
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            
+            // Gérer l'indicateur de frappe
+            if (hasText && currentPseudo && socket && socket.connected) {
+                handleTyping();
+            } else {
+                handleStopTyping();
+            }
+        });
+
+        // Gérer quand l'utilisateur arrête de taper
+        messageInput.addEventListener('blur', function() {
+            handleStopTyping();
+        });
+
+        function handleTyping() {
+            // Si ce n'est pas déjà en train d'écrire, démarrer
+            if (!isTyping) {
+                isTyping = true;
+                
+                // Envoyer l'événement "typing" après un court délai (affichage rapide)
+                typingTimeout = setTimeout(function() {
+                    if (socket && socket.connected && currentPseudo) {
+                        socket.emit('typing');
+                        
+                        // Renvoyer périodiquement l'événement tant que l'utilisateur tape
+                        typingInterval = setInterval(function() {
+                            if (socket && socket.connected && currentPseudo && isTyping) {
+                                socket.emit('typing');
+                            } else {
+                                clearInterval(typingInterval);
+                                typingInterval = null;
+                            }
+                        }, TYPING_INTERVAL);
+                    }
+                }, TYPING_DELAY);
+            }
+        }
+
+        function handleStopTyping() {
+            if (isTyping) {
+                isTyping = false;
+                
+                // Annuler le délai initial
+                if (typingTimeout) {
+                    clearTimeout(typingTimeout);
+                    typingTimeout = null;
+                }
+                
+                // Arrêter l'intervalle périodique
+                if (typingInterval) {
+                    clearInterval(typingInterval);
+                    typingInterval = null;
+                }
+                
+                // Envoyer l'événement stop-typing
+                if (socket && socket.connected) {
+                    socket.emit('stop-typing');
+                }
+            }
+        }
+
+        function updateTypingIndicator(typingUsers) {
+            const typingIndicator = document.getElementById('typing-indicator');
+            
+            // Filtrer l'utilisateur actuel de la liste
+            const otherUsers = typingUsers.filter(function(user) {
+                return user !== currentPseudo;
+            });
+            
+            if (otherUsers.length === 0) {
+                typingIndicator.style.display = 'none';
+                return;
+            }
+            
+            let message = '';
+            if (otherUsers.length === 1) {
+                message = escapeHtml(otherUsers[0]) + ' est en train d\'écrire';
+            } else if (otherUsers.length === 2) {
+                message = escapeHtml(otherUsers[0]) + ', ' + escapeHtml(otherUsers[1]) + ' sont en train d\'écrire';
+            } else {
+                message = 'Plusieurs personnes sont en train d\'écrire';
+            }
+            
+            typingIndicator.textContent = message;
+            typingIndicator.style.display = 'flex';
+        }
+
+        function openPseudoModal() {
+            pseudoModal.classList.add('active');
+            pseudoInput.value = currentPseudo || '';
+            pseudoInput.focus();
+            pseudoInput.select();
+        }
+
+        function closePseudoModal() {
+            pseudoModal.classList.remove('active');
+        }
+
+        function handlePseudoKeyDown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                savePseudo();
+            } else if (event.key === 'Escape') {
+                closePseudoModal();
+            }
+        }
+
+        function savePseudo() {
+            const pseudo = pseudoInput.value.trim();
+            if (pseudo.length < 2) {
+                alert('Le pseudo doit contenir au moins 2 caractères');
+                return;
+            }
+            if (pseudo.length > 20) {
+                alert('Le pseudo ne peut pas dépasser 20 caractères');
+                return;
+            }
+            
+            currentPseudo = pseudo;
+            localStorage.setItem('chatPseudo', pseudo);
+            updatePseudoDisplay(pseudo);
+            closePseudoModal();
+            
+            // Rejoindre le chat avec le nouveau pseudo
+            if (socket && socket.connected) {
+                socket.emit('join-chat', { pseudo: pseudo });
+            }
+            
+            // Activer le bouton d'envoi si un message est déjà saisi
+            if (messageInput.value.trim().length > 0) {
+                sendBtn.disabled = false;
+            }
+        }
+
+        function updatePseudoDisplay(pseudo) {
+            document.getElementById('current-pseudo').textContent = pseudo;
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                if (!sendBtn.disabled && canSendMessage) {
+                    sendMessage();
+                }
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || !currentPseudo || !canSendMessage) {
+                return;
+            }
+
+            // Vérification côté client : minimum 500ms entre deux messages
+            const now = Date.now();
+            if (now - lastMessageTime < MIN_MESSAGE_INTERVAL) {
+                return;
+            }
+            lastMessageTime = now;
+
+            // Vérifier que Socket.IO est connecté
+            if (!socket || !socket.connected) {
+                alert('Vous n\'êtes pas connecté au chat. Veuillez rafraîchir la page.');
+                return;
+            }
+
+            // Arrêter l'indicateur de frappe
+            handleStopTyping();
+            
+            // Envoyer le message via Socket.IO
+            socket.emit('chat-message', {
+                pseudo: currentPseudo,
+                message: message
+            });
+            
+            // Réinitialiser le champ
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            sendBtn.disabled = true;
+        }
+
+        function showRateLimitMessage(message, retryAfter) {
+            const rateLimitMsg = document.getElementById('rate-limit-message');
+            rateLimitMsg.textContent = message + ' (Attente: ' + retryAfter + 's)';
+            rateLimitMsg.classList.add('show');
+            
+            // Désactiver le bouton d'envoi
+            sendBtn.disabled = true;
+            messageInput.disabled = true;
+        }
+
+        function hideRateLimitMessage() {
+            const rateLimitMsg = document.getElementById('rate-limit-message');
+            rateLimitMsg.classList.remove('show');
+            
+            // Réactiver le bouton d'envoi
+            messageInput.disabled = false;
+            if (messageInput.value.trim().length > 0 && currentPseudo) {
+                sendBtn.disabled = false;
+            }
+        }
+
+        function addMessageToChat(pseudo, message, isOwn = false, timestamp = null) {
+            // Supprimer le message vide si présent
+            const emptyChat = messagesContainer.querySelector('.empty-chat');
+            if (emptyChat) {
+                emptyChat.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            // Utiliser le timestamp du serveur si fourni, sinon utiliser la date actuelle
+            let time;
+            if (timestamp) {
+                const date = new Date(timestamp);
+                time = date.toLocaleTimeString('fr-FR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            } else {
+                // Fallback si pas de timestamp (ne devrait pas arriver)
+                const now = new Date();
+                time = now.toLocaleTimeString('fr-FR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="message-author">${escapeHtml(pseudo)}</span>
+                    <span class="message-time">${time}</span>
+                </div>
+                <div class="message-content">${escapeHtml(message)}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addSystemMessage(message) {
+            // Supprimer le message vide si présent
+            const emptyChat = messagesContainer.querySelector('.empty-chat');
+            if (emptyChat) {
+                emptyChat.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message system';
+            messageDiv.innerHTML = `
+                <div class="message-content">${escapeHtml(message)}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function updateUserCount(count) {
+            const userCountElement = document.getElementById('user-count');
+            if (userCountElement) {
+                if (count === 0) {
+                    userCountElement.textContent = 'Aucun connecté';
+                } else if (count === 1) {
+                    userCountElement.textContent = '1 connecté';
+                } else {
+                    userCountElement.textContent = count + ' connectés';
+                }
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        pseudoModal.addEventListener('click', function(event) {
+            if (event.target === pseudoModal) {
+                closePseudoModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+<style>
+    .chat-container {
+        max-width: 900px;
+        min-width: 570px;
+        margin: 40px auto;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 200px);
+        min-height: 600px;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .chat-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .user-count {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .pseudo-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .pseudo-display span {
+        font-weight: 500;
+    }
+
+    .change-pseudo-btn {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    .change-pseudo-btn:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+    .messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        max-width: 70%;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.own {
+        align-self: flex-end;
+    }
+
+    .message.other {
+        align-self: flex-start;
+    }
+
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .message.own .message-header {
+        justify-content: flex-end;
+    }
+
+    .message-author {
+        font-weight: 600;
+        color: #2563eb;
+    }
+
+    .message.own .message-author {
+        color: #10b981;
+    }
+
+    .message-time {
+        color: #9ca3af;
+        font-size: 0.75rem;
+    }
+
+    .message-content {
+        padding: 12px 16px;
+        border-radius: 12px;
+        word-wrap: break-word;
+        line-height: 1.5;
+    }
+
+    .message.own .message-content {
+        background: #2563eb;
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message.other .message-content {
+        background: #ffffff;
+        color: #1f2937;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 4px;
+    }
+
+    .message.system {
+        align-self: center;
+        max-width: 90%;
+        margin: 8px 0;
+    }
+
+    .message.system .message-content {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 8px 16px;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-style: italic;
+        text-align: center;
+        border: none;
+    }
+
+    .typing-indicator {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+        color: #64748b;
+        font-style: italic;
+        text-align: left;
+        background: #f8fafc;
+        border-top: 1px solid #e5e7eb;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+    }
+
+    .empty-chat {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        font-style: italic;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .chat-input-container {
+        padding: 20px;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+    }
+
+    .chat-input-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: none;
+        transition: all 0.2s;
+        max-height: 120px;
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .send-btn {
+        padding: 12px 24px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .send-btn:hover:not(:disabled) {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .send-btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .send-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    /* Modal pour choisir le pseudo */
+    .pseudo-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-in;
+    }
+
+    .pseudo-modal.active {
+        display: flex;
+    }
+
+    .pseudo-modal-content {
+        background: white;
+        padding: 32px;
+        border-radius: 16px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .pseudo-modal-content h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.5rem;
+        color: #1f2937;
+    }
+
+    .pseudo-modal-content p {
+        margin: 0 0 20px 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .pseudo-input-group {
+        margin-bottom: 20px;
+    }
+
+    .pseudo-input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.9rem;
+    }
+
+    .pseudo-input-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.2s;
+    }
+
+    .pseudo-input-group input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .pseudo-modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #d1d5db;
+    }
+
+    /* Scrollbar personnalisée */
+    .messages-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Message de rate limit */
+    .rate-limit-message {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ef4444;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        z-index: 999;
+        display: none;
+        animation: slideDown 0.3s ease-out;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .rate-limit-message.show {
+        display: block;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+</style>

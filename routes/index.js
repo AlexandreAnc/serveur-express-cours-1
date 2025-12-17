@@ -30,6 +30,14 @@ router.get('/contact', function(req, res, next) {
   });
 });
 
+/* GET chat page. */
+router.get('/chat', function(req, res, next) {
+  res.render('pages/chat', { 
+    title: 'Chat',
+    website_title: WEBSITE_TITLE
+  });
+});
+
 /* GET logs page. */
 router.get('/logs', function(req, res, next) {
   // Lire les logs depuis le fichier si il existe

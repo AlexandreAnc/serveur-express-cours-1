@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 
 // Configuration du site
-var WEBSITE_TITLE = 'Site bien!';
+var WEBSITE_TITLE = 'Site cool!';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

@@ -27,5 +27,3 @@ jobs:
             # Reload if exists, otherwise start
             PORT=8080 pm2 reload serveur-express-cours-1 --update-env || PORT=8080 pm2 start ./bin/www --name serveur-express-cours-1
             pm2 save
-
-            curl -I http://localhost:8080

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<%- include('../layout/head', { title: title }) %>
+</head>
+
+<body>
+    <%- include('../layout/header') %>
+
+    <main class="container">
+        <div style="text-align: center;">
+            <% if (isAuthenticated && user) { %>
+                <h2>Bienvenue <%= user.login %></h2>
+            <% } %>
+            <h2>Contact</h2>
+            <p>Page de contact cool</p>
+        </div>
+    </main>
+
+    <%- include('../layout/footer') %>
+</body>
+</html>

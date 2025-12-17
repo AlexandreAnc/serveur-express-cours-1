@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<%- include('../layout/head', { title }) %>
+</head>
+
+<body>
+    <%- include('../layout/header') %>
+
+    <main class="container">
+        <div class="log-page">
+            <% if (isAuthenticated && user) { %>
+                <h2 style="text-align: center; margin-bottom: 1rem;">Bienvenue <%= user.login %></h2>
+            <% } %>
+            <h2>Journal des requêtes</h2>
+            <p class="log-subtitle">
+                Voici les dernières actions détectées par le serveur.
+            </p>
+
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="terminal-title">latest-log.txt</span>
+                </div>
+                <div class="terminal-body">
+                    <% if (logs && logs.trim().length > 0) { %>
+                        <% logs.split('\n').forEach(function(line, index) { 
+                            if (!line.trim().length) return;
+                        %>
+                            <div class="terminal-line">
+                                <span class="prompt">λ</span>
+                                <span class="line-content"><%= line %></span>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="terminal-line">
+                            <span class="prompt">λ</span>
+                            <span class="line-content terminal-empty">
+                                Aucun log pour le moment... le serveur s’ennuie un peu 😴
+                            </span>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../layout/footer') %>
+</body>
+</html>

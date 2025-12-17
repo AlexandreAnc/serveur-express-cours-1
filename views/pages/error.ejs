@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<%- include('../layout/head', { title: title || 'Erreur' }) %>
+<style>
+    /* Conteneur pour les animations en arrière-plan */
+    #background-animations {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    /* Style pour les textes animés */
+    .animated-text {
+        position: absolute;
+        font-size: 2rem;
+        font-weight: bold;
+        color: rgba(231, 76, 60, 0.15);
+        white-space: nowrap;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    /* Variantes de styles pour les textes */
+    .animated-text.rotate {
+        animation: rotate 3s linear infinite;
+    }
+
+    .animated-text.pulse {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .animated-text.bounce {
+        animation: bounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(1.2); }
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Assurer que le contenu principal est au-dessus */
+    body {
+        position: relative;
+        z-index: 1;
+    }
+
+    main.container {
+        position: relative;
+        z-index: 1;
+    }
+</style>
+</head>
+
+<body>
+    <!-- Conteneur pour les animations en arrière-plan -->
+    <div id="background-animations"></div>
+
+    <%- include('../layout/header') %>
+
+    <main class="container">
+        <div style="text-align: center; padding: 3rem 0;">
+            <% if (isAuthenticated && user) { %>
+                <h2 style="margin-bottom: 1rem;">Bienvenue <%= user.login %></h2>
+            <% } %>
+            <h1 style="font-size: 6rem; margin: 0; color: #e74c3c;"><%= status || 404 %></h1>
+            <h2 style="margin-top: 1rem;">
+                <% if (status === 404) { %>
+                    Page non trouvée
+                <% } else { %>
+                    Erreur serveur
+                <% } %>
+            </h2>
+            <p style="font-size: 1.2rem; color: #7f8c8d; margin: 1.5rem 0;">
+                <% if (status === 404) { %>
+                    Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+                <% } else { %>
+                    Une erreur s'est produite. Veuillez réessayer plus tard.
+                <% } %>
+            </p>
+            <div style="margin-top: 2rem;">
+                <a href="/" style="display: inline-block; padding: 0.75rem 2rem; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 0.5rem;">
+                    Retour à l'accueil
+                </a>
+                <a href="javascript:history.back()" style="display: inline-block; padding: 0.75rem 2rem; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px; margin: 0 0.5rem;">
+                    Page précédente
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../layout/footer') %>
+
+    <script>
+        // Variantes du texte "à l'aide"
+        const textVariants = [
+            "à l'aide",
+            "alaide",
+            "À L'AIDE",
+            "ALED",
+            "aled",
+            "A L'AIDE",
+            "à l'aide !",
+            "ALED !!!",
+            "à l'aide ?",
+            "HELP",
+            "help",
+            "à l'aide 😱",
+            "ALED 😭"
+        ];
+
+        // Styles supplémentaires pour les textes
+        const extraStyles = ['rotate', 'pulse', 'bounce'];
+
+        // Conteneur pour les animations
+        const container = document.getElementById('background-animations');
+        const texts = [];
+
+        // Fonction pour créer un texte animé qui rebondit comme le logo DVD
+        function createBouncingText() {
+            const text = document.createElement('div');
+            text.className = 'animated-text';
+            
+            // Texte aléatoire
+            const randomText = textVariants[Math.floor(Math.random() * textVariants.length)];
+            text.textContent = randomText;
+            
+            // Taille aléatoire
+            const size = Math.random() * 1.5 + 1; // Entre 1rem et 2.5rem
+            text.style.fontSize = size + 'rem';
+            
+            // Couleur légèrement variée
+            const opacity = Math.random() * 0.2 + 0.1; // Entre 0.1 et 0.3
+            const hue = Math.random() * 30 + 0; // Rouge-orangé
+            text.style.color = `hsla(${hue}, 70%, 50%, ${opacity})`;
+            
+            // Position initiale aléatoire
+            const maxX = window.innerWidth - 200;
+            const maxY = window.innerHeight - 100;
+            let x = Math.random() * maxX;
+            let y = Math.random() * maxY;
+            
+            // Vitesse aléatoire
+            let vx = (Math.random() - 0.5) * 2 + 0.5; // Entre -0.5 et 1.5
+            let vy = (Math.random() - 0.5) * 2 + 0.5;
+            
+            // Ajouter un style supplémentaire aléatoire (rotation, pulse, bounce)
+            if (Math.random() > 0.7) {
+                const extraStyle = extraStyles[Math.floor(Math.random() * extraStyles.length)];
+                text.classList.add(extraStyle);
+            }
+            
+            text.style.left = x + 'px';
+            text.style.top = y + 'px';
+            
+            container.appendChild(text);
+            
+            // Animation de rebond (style DVD)
+            function animate() {
+                x += vx;
+                y += vy;
+                
+                // Rebond sur les bords
+                if (x <= 0 || x >= maxX) {
+                    vx = -vx;
+                    x = Math.max(0, Math.min(maxX, x));
+                }
+                
+                if (y <= 0 || y >= maxY) {
+                    vy = -vy;
+                    y = Math.max(0, Math.min(maxY, y));
+                }
+                
+                text.style.left = x + 'px';
+                text.style.top = y + 'px';
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            texts.push({ element: text, x, y, vx, vy });
+        }
+
+        // Créer plusieurs textes animés
+        const numTexts = 15; // Nombre de textes à créer
+        for (let i = 0; i < numTexts; i++) {
+            setTimeout(() => createBouncingText(), i * 200); // Délai pour créer progressivement
+        }
+
+        // Ajuster les positions lors du redimensionnement de la fenêtre
+        window.addEventListener('resize', () => {
+            texts.forEach(textObj => {
+                const maxX = window.innerWidth - 200;
+                const maxY = window.innerHeight - 100;
+                
+                // Limiter la position si nécessaire
+                if (textObj.x > maxX) textObj.x = maxX;
+                if (textObj.y > maxY) textObj.y = maxY;
+            });
+        });
+
+        // Ajouter quelques textes supplémentaires qui apparaissent et disparaissent
+        function createFloatingText() {
+            const text = document.createElement('div');
+            text.className = 'animated-text';
+            text.textContent = textVariants[Math.floor(Math.random() * textVariants.length)];
+            text.style.fontSize = (Math.random() * 1 + 1.5) + 'rem';
+            text.style.color = `rgba(231, 76, 60, ${Math.random() * 0.2 + 0.1})`;
+            text.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+            text.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            text.style.opacity = '0';
+            text.style.transition = 'opacity 2s ease-in-out';
+            
+            container.appendChild(text);
+            
+            // Faire apparaître
+            setTimeout(() => {
+                text.style.opacity = '0.2';
+            }, 100);
+            
+            // Faire disparaître et supprimer
+            setTimeout(() => {
+                text.style.opacity = '0';
+                setTimeout(() => {
+                    if (text.parentNode) {
+                        text.parentNode.removeChild(text);
+                    }
+                }, 2000);
+            }, 5000);
+        }
+
+        // Créer des textes flottants périodiquement
+        setInterval(createFloatingText, 3000);
+    </script>
+</body>
+</html>
+

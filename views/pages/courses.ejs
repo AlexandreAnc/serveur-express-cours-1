@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<%- include('../layout/head', { title: title }) %>
+<style>
+    .courses-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .courses-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .courses-header h1 {
+        font-size: 2.5rem;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .courses-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .course-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-card-header {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 20px;
+    }
+
+    .course-card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+    }
+
+    .course-card-instructor {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .course-card-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-card-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2563eb;
+        margin: 0 0 20px 0;
+    }
+
+    .course-card-price::after {
+        content: ' €';
+        font-size: 1.2rem;
+    }
+
+    .course-card-button {
+        width: 100%;
+        padding: 12px 24px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: auto;
+    }
+
+    .course-card-button:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .course-card-button:active {
+        transform: translateY(0);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+
+    .error {
+        text-align: center;
+        padding: 40px;
+        color: #ef4444;
+        font-size: 1.1rem;
+    }
+
+    .empty-courses {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+
+    .empty-courses h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #6b7280;
+    }
+</style>
+</head>
+
+<body>
+    <%- include('../layout/header') %>
+
+    <main class="container">
+        <div class="courses-container">
+            <div class="courses-header">
+                <h1>📚 Mes cours</h1>
+                <p>Découvrez notre sélection de formations</p>
+            </div>
+
+            <div id="courses-container">
+                <div class="loading">Chargement des cours...</div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../layout/footer') %>
+
+    <script>
+        // Fonction pour formater le nom de l'instructeur (prénom + NOM)
+        function formatInstructorName(name) {
+            if (!name) return 'Instructeur inconnu';
+            
+            var parts = name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                // Prendre le premier mot comme prénom et le reste comme nom (en majuscules)
+                var prenom = parts[0];
+                var nom = parts.slice(1).join(' ').toUpperCase();
+                return prenom + ' ' + nom;
+            }
+            // Si un seul mot, le retourner tel quel
+            return name;
+        }
+
+        // Fonction pour charger les cours depuis l'API
+        async function loadCourses() {
+            const container = document.getElementById('courses-container');
+            
+            try {
+                const response = await fetch('/api/courses');
+                const result = await response.json();
+                
+                if (!result.success) {
+                    container.innerHTML = '<div class="error">Erreur lors du chargement des cours</div>';
+                    return;
+                }
+                
+                const courses = result.data;
+                
+                if (courses.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-courses">
+                            <h3>Aucun cours disponible</h3>
+                            <p>Les cours seront bientôt disponibles.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Créer le grid de cartes
+                const grid = document.createElement('div');
+                grid.className = 'courses-grid';
+                
+                courses.forEach(function(course) {
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    
+                    const instructorName = course.instructor 
+                        ? formatInstructorName(course.instructor.name)
+                        : 'Instructeur inconnu';
+                    
+                    card.innerHTML = `
+                        <div class="course-card-header">
+                            <h3 class="course-card-title">${escapeHtml(course.title || 'Sans titre')}</h3>
+                            <p class="course-card-instructor">Instructeur : ${escapeHtml(instructorName)}</p>
+                        </div>
+                        <div class="course-card-body">
+                            <div class="course-card-price">${course.price || 0}</div>
+                            <button class="course-card-button" onclick="handlePurchase(${course.id}, '${escapeHtml(course.title || '')}')">
+                                Acheter
+                            </button>
+                        </div>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+                
+                container.innerHTML = '';
+                container.appendChild(grid);
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement des cours:', error);
+                container.innerHTML = '<div class="error">Erreur lors du chargement des cours. Veuillez réessayer plus tard.</div>';
+            }
+        }
+
+        // Fonction pour échapper le HTML (sécurité XSS)
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Fonction pour gérer l'achat
+        function handlePurchase(courseId, courseTitle) {
+            // TODO: Implémenter la logique d'achat
+            alert('Achat du cours : ' + courseTitle + ' (ID: ' + courseId + ')');
+            // Ici vous pourriez rediriger vers une page de paiement ou ouvrir un modal
+        }
+
+        // Charger les cours au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCourses();
+        });
+    </script>
+</body>
+
+</html>
+

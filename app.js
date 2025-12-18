@@ -4,10 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
+var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var apiRouter = require('./routes/api');
 var WEBSITE_TITLE = indexRouter.WEBSITE_TITLE;
+
+// Initialiser Sequelize et la base de données
+var sequelize = require('./models/index');
+var User = require('./models/User');
+var Course = require('./models/Course'); // Charger le modèle Course pour initialiser les relations
 
 var app = express();
 
@@ -19,6 +26,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Configuration CORS pour l'API
+app.use(cors({
+  origin: '*', // En production, spécifier les domaines autorisés
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Configuration de la session
 app.use(session({
@@ -37,17 +51,41 @@ app.use(function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Synchroniser les modèles avec la base de données (créer les tables si elles n'existent pas)
+sequelize.sync({ force: false }) // force: false = ne supprime pas les données existantes
+  .then(function() {
+    console.log('✓ Modèles synchronisés avec la base de données');
+  })
+  .catch(function(err) {
+    console.error('✗ Erreur lors de la synchronisation:', err);
+  });
+
+// Routes web (pages EJS)
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+// Routes API RESTful
+app.use('/api', apiRouter);
 
 // 404 et redirection vers la page d'erreur
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// erreur
+// Gestion des erreurs
 app.use(function(err, req, res, next) {
-  // locals = message d'erreur seulement en environnement de dev
+  // Si c'est une requête API, retourner du JSON
+  if (req.path.startsWith('/api')) {
+    res.status(err.status || 500);
+    res.json({
+      success: false,
+      message: err.message || 'Erreur serveur',
+      error: req.app.get('env') === 'development' ? err : {}
+    });
+    return;
+  }
+  
+  // Sinon, rendre la page d'erreur EJS
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 

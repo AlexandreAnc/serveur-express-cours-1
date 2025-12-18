@@ -104,6 +104,12 @@ coverage/
 # Fichiers de session
 sessions/
 
+# Base de données SQLite
+database.sqlite
+*.sqlite
+*.sqlite3
+*.db
+
 # Fichiers uploadés (si nécessaire)
 uploads/
 public/uploads/

@@ -14,12 +14,17 @@ router.get('/', function(req, res, next) {
   });
 });
 
-/* GET about page. */
-router.get('/about', function(req, res, next) {
-  res.render('pages/about', { 
-    title: 'À Propos',
+/* GET courses page (remplace "À propos"). */
+router.get('/courses', function(req, res, next) {
+  res.render('pages/courses', { 
+    title: 'Mes cours',
     website_title: WEBSITE_TITLE
   });
+});
+
+/* GET about page (conservée pour compatibilité). */
+router.get('/about', function(req, res, next) {
+  res.redirect('/courses');
 });
 
 /* GET contact page. */

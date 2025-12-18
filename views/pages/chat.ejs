@@ -91,6 +91,11 @@
 
         // Initialiser Socket.IO
         function initSocket() {
+            // Déconnecter l'ancienne connexion si elle existe
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
+            
             socket = io({
                 // Utiliser uniquement polling pour éviter les problèmes WebSocket avec Nginx
                 transports: ['polling'],
@@ -155,25 +160,36 @@
             });
             
             // Écouter la déconnexion
-            socket.on('disconnect', function() {
-                console.log('Déconnecté du serveur Socket.IO');
+            socket.on('disconnect', function(reason) {
+                console.log('Déconnecté du serveur Socket.IO - Raison:', reason);
             });
+        }
+
+        // Fonction pour déconnecter proprement
+        function disconnectSocket() {
+            if (socket && socket.connected) {
+                try {
+                    socket.emit('stop-typing');
+                    socket.disconnect();
+                } catch (e) {
+                    console.error('Erreur lors de la déconnexion:', e);
+                }
+            }
         }
 
         // Gérer la déconnexion quand l'utilisateur quitte la page
         window.addEventListener('beforeunload', function() {
-            if (socket && socket.connected) {
-                // Envoyer un événement de déconnexion avant de quitter
-                socket.emit('disconnect-user');
-                socket.disconnect();
-            }
+            disconnectSocket();
         });
 
         // Gérer aussi l'événement unload pour être sûr
         window.addEventListener('unload', function() {
-            if (socket && socket.connected) {
-                socket.disconnect();
-            }
+            disconnectSocket();
+        });
+        
+        // Gérer aussi pagehide (plus fiable que unload sur certains navigateurs)
+        window.addEventListener('pagehide', function() {
+            disconnectSocket();
         });
 
         // Initialiser Socket.IO au chargement

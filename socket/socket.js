@@ -19,10 +19,25 @@ function setupSocket(io) {
   // Stocker les utilisateurs qui ont rejoint le chat (socketId -> pseudo)
   var connectedUsers = {};
   
+  // Stocker les pseudos actifs pour éviter les doublons (pseudo -> socketId)
+  var pseudoToSocketId = {};
+  
   // Fonction pour diffuser la liste des utilisateurs en train d'écrire
   function broadcastTypingUsers() {
     var typingList = Object.values(typingUsers);
     io.emit('typing-users', { users: typingList });
+  }
+  
+  // Fonction pour nettoyer une connexion utilisateur
+  function cleanupUser(socketId) {
+    var pseudo = connectedUsers[socketId];
+    if (pseudo) {
+      delete connectedUsers[socketId];
+      // Nettoyer aussi le mapping pseudo -> socketId si c'est le bon socket
+      if (pseudoToSocketId[pseudo] === socketId) {
+        delete pseudoToSocketId[pseudo];
+      }
+    }
   }
   
   // Fonction pour diffuser le nombre d'utilisateurs connectés (uniquement ceux qui ont rejoint)
@@ -96,11 +111,25 @@ function setupSocket(io) {
     socket.on('join-chat', function(data) {
       var pseudo = data.pseudo || 'Anonyme';
       
+      // Si ce pseudo est déjà connecté avec un autre socket, nettoyer l'ancienne connexion
+      if (pseudoToSocketId[pseudo] && pseudoToSocketId[pseudo] !== socket.id) {
+        var oldSocketId = pseudoToSocketId[pseudo];
+        // Nettoyer l'ancienne connexion
+        cleanupUser(oldSocketId);
+        // Déconnecter l'ancien socket s'il existe encore
+        var oldSocket = io.sockets.sockets.get(oldSocketId);
+        if (oldSocket) {
+          oldSocket.disconnect(true);
+        }
+        logger.writeLog('Ancienne connexion nettoyée pour pseudo: ' + pseudo + ' - Ancien Socket ID: ' + oldSocketId);
+      }
+      
       // Sauvegarder le pseudo dans la socket
       socket.pseudo = pseudo;
       
       // Ajouter l'utilisateur à la liste des utilisateurs connectés
       connectedUsers[socket.id] = pseudo;
+      pseudoToSocketId[pseudo] = socket.id;
       
       // Logger l'arrivée dans le chat
       logger.writeLog('Utilisateur rejoint le chat - Pseudo: ' + pseudo + ' - Socket ID: ' + socket.id);
@@ -219,8 +248,14 @@ function setupSocket(io) {
       }
     });
     
+    // Nettoyer immédiatement lors de la connexion si le socket est déjà dans la liste
+    // (cas où le disconnect n'a pas encore été traité)
+    if (connectedUsers[socket.id]) {
+      cleanupUser(socket.id);
+    }
+    
     // Événement de déconnexion
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function(reason) {
       // Retirer l'utilisateur de la liste des utilisateurs en train d'écrire
       if (typingUsers[socket.id]) {
         delete typingUsers[socket.id];
@@ -229,7 +264,7 @@ function setupSocket(io) {
       
       // Retirer l'utilisateur de la liste des utilisateurs connectés
       if (connectedUsers[socket.id]) {
-        delete connectedUsers[socket.id];
+        cleanupUser(socket.id);
         // Diffuser le nouveau nombre d'utilisateurs connectés après la déconnexion
         broadcastUserCount();
       }
@@ -238,7 +273,7 @@ function setupSocket(io) {
         clearTimeout(typingTimeout);
       }
       
-      logger.writeLog('Utilisateur déconnecté - IP: ' + clientIp + ' - Socket ID: ' + socket.id);
+      logger.writeLog('Utilisateur déconnecté - IP: ' + clientIp + ' - Socket ID: ' + socket.id + ' - Raison: ' + reason);
     });
   });
 }

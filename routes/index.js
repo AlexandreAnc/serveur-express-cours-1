@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var path = require('path');
+var passport = require('../config/passport');
 
 // Configuration du site
 var WEBSITE_TITLE = 'Site bien!';
@@ -104,7 +105,7 @@ router.get('/download', function(req, res, next) {
 /* GET login page. */
 router.get('/login', function(req, res, next) {
   // Si déjà connecté, rediriger vers l'accueil
-  if (req.session.user) {
+  if (req.user || req.session.user) {
     return res.redirect('/');
   }
   
@@ -113,6 +114,29 @@ router.get('/login', function(req, res, next) {
     website_title: WEBSITE_TITLE
   });
 });
+
+/* GET auth/google - Démarre l'authentification Google OAuth */
+router.get('/auth/google', 
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+/* GET auth/google/callback - Callback après authentification Google */
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Authentification réussie, sauvegarder dans la session
+    req.session.user = {
+      id: req.user.id,
+      username: req.user.email,
+      login: req.user.login || req.user.name,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role
+    };
+    // Rediriger vers l'accueil
+    res.redirect('/');
+  }
+);
 
 /* POST login - traitement du formulaire. */
 router.post('/login', function(req, res, next) {
@@ -140,11 +164,16 @@ router.post('/login', function(req, res, next) {
 
 /* GET logout - déconnexion. */
 router.get('/logout', function(req, res, next) {
-  req.session.destroy(function(err) {
+  req.logout(function(err) {
     if (err) {
-      console.error('Erreur lors de la déconnexion:', err);
+      console.error('Erreur lors de la déconnexion Passport:', err);
     }
-    res.redirect('/');
+    req.session.destroy(function(err) {
+      if (err) {
+        console.error('Erreur lors de la destruction de la session:', err);
+      }
+      res.redirect('/');
+    });
   });
 });
 

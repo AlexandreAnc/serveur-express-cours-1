@@ -1,3 +1,6 @@
+// Charger les variables d'environnement depuis .env
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -5,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var cors = require('cors');
+var passport = require('./config/passport');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,6 +17,12 @@ var WEBSITE_TITLE = indexRouter.WEBSITE_TITLE;
 
 // Initialiser la connexion à la base de données SQLite avec better-sqlite3
 var db = require('./config/database');
+
+// Initialiser Sequelize pour validation ORM (utilisé en parallèle avec better-sqlite3)
+var sequelize = require('./config/sequelize');
+var User = require('./models/User'); // Charger le modèle User
+var Course = require('./models/Course'); // Charger le modèle Course pour initialiser les relations
+var Message = require('./models/Message'); // Charger le modèle Message
 
 var app = express();
 
@@ -40,10 +50,15 @@ app.use(session({
   cookie: { secure: false } 
 }));
 
+// Initialiser Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Middleware pour passer les informations de session à toutes les vues
 app.use(function(req, res, next) {
-  res.locals.user = req.session.user || null;
-  res.locals.isAuthenticated = !!req.session.user;
+  // Utiliser req.user de Passport si disponible, sinon req.session.user
+  res.locals.user = req.user || req.session.user || null;
+  res.locals.isAuthenticated = !!req.user || !!req.session.user;
   next();
 });
 

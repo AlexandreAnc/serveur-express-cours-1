@@ -94,13 +94,6 @@ coverage/
 .eslintcache
 .stylelintcache
 
-# Fichiers de configuration locale (mais on garde .env)
-.env.local
-.env.*.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Fichiers de session
 sessions/
 
@@ -118,6 +111,4 @@ public/uploads/
 *.bak
 *.backup
 *~
-
-# Note: .env est intentionnellement inclus (non ignoré)
 

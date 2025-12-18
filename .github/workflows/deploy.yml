@@ -24,6 +24,14 @@ jobs:
 
             npm ci --omit=dev
 
+            # Créer le fichier .env avec les secrets GitHub
+            cat > .env << EOF
+            PORT=${{ secrets.PORT }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
+            EOF
+
             # Reload if exists, otherwise start
             PORT=8080 pm2 reload serveur-express-cours-1 --update-env || PORT=8080 pm2 start ./bin/www --name serveur-express-cours-1
             pm2 save

@@ -107,6 +107,11 @@ database.sqlite
 uploads/
 public/uploads/
 
+# Fichiers de variables d'environnement (contiennent des secrets)
+.env
+.env.local
+.env.production
+
 # Fichiers de sauvegarde
 *.bak
 *.backup

@@ -5,7 +5,7 @@ var path = require('path');
 var passport = require('../config/passport');
 
 // Configuration du site
-var WEBSITE_TITLE = 'Site bien!';
+var WEBSITE_TITLE = 'TP_Express';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

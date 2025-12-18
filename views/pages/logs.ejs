@@ -49,5 +49,21 @@
     </main>
 
     <%- include('../layout/footer') %>
+    
+    <script>
+        // Défilement automatique vers le bas (logs les plus récents) au chargement de la page
+        window.addEventListener('DOMContentLoaded', function() {
+            var terminalBody = document.querySelector('.terminal-body');
+            if (terminalBody) {
+                // Défiler vers le bas immédiatement
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+                
+                // Attendre un peu pour s'assurer que tout est rendu, puis défiler à nouveau
+                setTimeout(function() {
+                    terminalBody.scrollTop = terminalBody.scrollHeight;
+                }, 100);
+            }
+        });
+    </script>
 </body>
 </html>

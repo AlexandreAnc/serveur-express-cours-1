@@ -1,5 +1,6 @@
 var logger = require('../utils/logger');
 var wordFilter = require('../utils/wordFilter');
+var db = require('../config/database');
 
 // Configuration anti-spam
 var RATE_LIMIT = {
@@ -28,6 +29,33 @@ function setupSocket(io) {
   function broadcastUserCount() {
     var userCount = Object.keys(connectedUsers).length;
     io.emit('user-count', { count: userCount });
+  }
+  
+  // Fonction pour récupérer les 5 derniers messages de l'historique
+  function getLastMessages(limit) {
+    try {
+      var stmt = db.prepare('SELECT pseudo, message, timestamp FROM messages ORDER BY id DESC LIMIT ?');
+      var messages = stmt.all(limit || 5);
+      // Inverser pour avoir les plus anciens en premier
+      return messages.reverse();
+    } catch (error) {
+      logger.writeLog('Erreur lors de la récupération de l\'historique: ' + error.message);
+      return [];
+    }
+  }
+  
+  // Fonction pour sauvegarder un message dans la base de données
+  function saveMessage(pseudo, message, timestamp) {
+    try {
+      var insertStmt = db.prepare('INSERT INTO messages (pseudo, message, timestamp) VALUES (?, ?, ?)');
+      insertStmt.run(pseudo, message, timestamp);
+      
+      // Garder seulement les 5 derniers messages (supprimer les anciens)
+      var deleteStmt = db.prepare('DELETE FROM messages WHERE id NOT IN (SELECT id FROM messages ORDER BY id DESC LIMIT 5)');
+      deleteStmt.run();
+    } catch (error) {
+      logger.writeLog('Erreur lors de la sauvegarde du message: ' + error.message);
+    }
   }
   
   io.on('connection', function(socket) {
@@ -77,6 +105,14 @@ function setupSocket(io) {
       // Logger l'arrivée dans le chat
       logger.writeLog('Utilisateur rejoint le chat - Pseudo: ' + pseudo + ' - Socket ID: ' + socket.id);
       
+      // Envoyer l'historique des 5 derniers messages au nouvel utilisateur
+      var lastMessages = getLastMessages(5);
+      if (lastMessages.length > 0) {
+        socket.emit('chat-history', {
+          messages: lastMessages
+        });
+      }
+      
       // Diffuser le nouveau nombre d'utilisateurs connectés
       broadcastUserCount();
       
@@ -123,11 +159,17 @@ function setupSocket(io) {
         logger.writeLog('Message chat - Pseudo: ' + pseudo + ' - Message: ' + message.substring(0, 50));
       }
       
+      // Créer le timestamp
+      var timestamp = new Date().toISOString();
+      
+      // Sauvegarder le message dans la base de données
+      saveMessage(pseudo, message, timestamp);
+      
       // Diffuser le message filtré à tous les utilisateurs
       io.emit('new-message', {
         pseudo: pseudo,
         message: message,
-        timestamp: new Date().toISOString()
+        timestamp: timestamp
       });
       
       // Arrêter l'indicateur de frappe après l'envoi d'un message

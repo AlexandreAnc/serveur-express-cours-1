@@ -91,7 +91,16 @@
 
         // Initialiser Socket.IO
         function initSocket() {
-            socket = io();
+            socket = io({
+                // Forcer le polling si les WebSockets échouent
+                transports: ['websocket', 'polling'],
+                // Réessayer automatiquement en cas d'échec
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                reconnectionAttempts: Infinity,
+                timeout: 20000
+            });
             
             // Écouter l'événement quand un utilisateur rejoint
             socket.on('user-joined', function(data) {
@@ -123,6 +132,16 @@
             // Écouter le nombre d'utilisateurs connectés
             socket.on('user-count', function(data) {
                 updateUserCount(data.count);
+            });
+            
+            // Écouter l'historique des messages (chargé quand on rejoint le chat)
+            socket.on('chat-history', function(data) {
+                if (data.messages && data.messages.length > 0) {
+                    // Afficher les messages historiques
+                    data.messages.forEach(function(msg) {
+                        addMessageToChat(msg.pseudo, msg.message, msg.pseudo === currentPseudo, msg.timestamp);
+                    });
+                }
             });
             
             // Écouter la connexion

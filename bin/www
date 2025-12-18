@@ -30,8 +30,18 @@ var server = http.createServer(app);
 var io = socketIo(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  // Configuration pour fonctionner derrière un reverse proxy (Nginx)
+  allowEIO3: true, // Compatibilité avec les anciennes versions
+  transports: ['websocket', 'polling'], // Permettre les deux transports
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  // Configuration pour les proxies
+  allowUpgrades: true,
+  // Permettre les connexions depuis différents domaines
+  path: '/socket.io/'
 });
 
 // Configurer les événements Socket.IO

@@ -1173,3 +1173,73 @@
 [2025-12-18 19:57:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9XPAJM8INIzFLYvZAAAB
 [2025-12-18 19:57:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 6jHIMGYWADEt7D8XAAAB
 [2025-12-18 19:57:31] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bRm6he0mzH_-Pv8AAAAB
+[2025-12-18 20:21:25] Nouvel utilisateur connecté - IP: ::1 - Socket ID: qOFiFz6jMP5YOdIOAAAB
+[2025-12-18 20:21:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: hEiH_LcRzRzsN_gZAAAB
+[2025-12-18 20:21:30] Nouvel utilisateur connecté - IP: ::1 - Socket ID: iFtnGAKJUgpP_gx4AAAB
+[2025-12-18 20:23:56] Nouvel utilisateur connecté - IP: ::1 - Socket ID: U73Bct7v2et1mWDKAAAB
+[2025-12-18 20:24:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 30P47mop9xC6pkMgAAAB
+[2025-12-18 20:24:08] Nouvel utilisateur connecté - IP: ::1 - Socket ID: cxyGJzg3GkfTUCncAAAB
+[2025-12-18 20:24:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ONeClDc8jxq-DsCvAAAB
+[2025-12-18 20:25:08] Nouvel utilisateur connecté - IP: ::1 - Socket ID: OuzQn8LNJM9oqNIQAAAB
+[2025-12-18 20:25:11] Utilisateur déconnecté - IP: ::1 - Socket ID: OuzQn8LNJM9oqNIQAAAB
+[2025-12-18 20:25:11] Nouvel utilisateur connecté - IP: ::1 - Socket ID: oc-i2e2CJbt52ZIXAAAD
+[2025-12-18 20:25:12] Utilisateur déconnecté - IP: ::1 - Socket ID: oc-i2e2CJbt52ZIXAAAD
+[2025-12-18 20:25:12] Nouvel utilisateur connecté - IP: ::1 - Socket ID: EY7WLYH5rKIeV38HAAAG
+[2025-12-18 20:25:12] Nouvel utilisateur connecté - IP: ::1 - Socket ID: vYolo85xwU-uFb9pAAAH
+[2025-12-18 20:25:12] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: vYolo85xwU-uFb9pAAAH
+[2025-12-18 20:25:15] Message chat - Pseudo: oooo - Message: salut
+[2025-12-18 20:25:16] Message chat - Pseudo: oooo - Message: ça va ?
+[2025-12-18 20:25:16] Utilisateur déconnecté - IP: ::1 - Socket ID: vYolo85xwU-uFb9pAAAH
+[2025-12-18 20:25:16] Utilisateur déconnecté - IP: ::1 - Socket ID: EY7WLYH5rKIeV38HAAAG
+[2025-12-18 20:25:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: npY24b1iqfJGagtuAAAK
+[2025-12-18 20:25:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: jcR-jQMdLuBImVmDAAAL
+[2025-12-18 20:25:17] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: jcR-jQMdLuBImVmDAAAL
+[2025-12-18 20:25:20] Message chat - Pseudo: oooo - Message: ue ue ue
+[2025-12-18 20:25:20] Message chat - Pseudo: oooo - Message: sdk
+[2025-12-18 20:25:21] Utilisateur déconnecté - IP: ::1 - Socket ID: jcR-jQMdLuBImVmDAAAL
+[2025-12-18 20:25:21] Utilisateur déconnecté - IP: ::1 - Socket ID: npY24b1iqfJGagtuAAAK
+[2025-12-18 20:25:21] Nouvel utilisateur connecté - IP: ::1 - Socket ID: vbH1tpbdS30-qBFgAAAO
+[2025-12-18 20:25:21] Nouvel utilisateur connecté - IP: ::1 - Socket ID: k5frcGiYdZpjoAl-AAAP
+[2025-12-18 20:25:21] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: k5frcGiYdZpjoAl-AAAP
+[2025-12-18 20:25:24] Message chat - Pseudo: oooo - Message: aa
+[2025-12-18 20:25:25] Utilisateur déconnecté - IP: ::1 - Socket ID: k5frcGiYdZpjoAl-AAAP
+[2025-12-18 20:25:25] Utilisateur déconnecté - IP: ::1 - Socket ID: vbH1tpbdS30-qBFgAAAO
+[2025-12-18 20:25:25] Nouvel utilisateur connecté - IP: ::1 - Socket ID: IqVLMoxcQbGOLMz-AAAS
+[2025-12-18 20:25:25] Nouvel utilisateur connecté - IP: ::1 - Socket ID: t0qbrmRyuuSYIel8AAAT
+[2025-12-18 20:25:25] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: t0qbrmRyuuSYIel8AAAT
+[2025-12-18 20:25:27] Message chat - Pseudo: oooo - Message: xD
+[2025-12-18 20:25:28] Utilisateur déconnecté - IP: ::1 - Socket ID: t0qbrmRyuuSYIel8AAAT
+[2025-12-18 20:25:28] Utilisateur déconnecté - IP: ::1 - Socket ID: IqVLMoxcQbGOLMz-AAAS
+[2025-12-18 20:25:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: JiMQZVbkAfcnVQm_AAAW
+[2025-12-18 20:25:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: vcIp5Qid6WXNEYBzAAAX
+[2025-12-18 20:25:28] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: vcIp5Qid6WXNEYBzAAAX
+[2025-12-18 20:25:31] Utilisateur déconnecté - IP: ::1 - Socket ID: vcIp5Qid6WXNEYBzAAAX
+[2025-12-18 20:25:31] Utilisateur déconnecté - IP: ::1 - Socket ID: JiMQZVbkAfcnVQm_AAAW
+[2025-12-18 20:25:31] Nouvel utilisateur connecté - IP: ::1 - Socket ID: W-VXaJ0BGnY72BJEAAAZ
+[2025-12-18 20:27:09] Utilisateur déconnecté - IP: ::1 - Socket ID: W-VXaJ0BGnY72BJEAAAZ
+[2025-12-18 20:27:09] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 40qCXitwUVmP0CEXAAAb
+[2025-12-18 20:28:07] Utilisateur déconnecté - IP: ::1 - Socket ID: 40qCXitwUVmP0CEXAAAb
+[2025-12-18 20:28:07] Nouvel utilisateur connecté - IP: ::1 - Socket ID: -wZk9DwfP7dkmhWKAAAd
+[2025-12-18 20:28:31] Utilisateur déconnecté - IP: ::1 - Socket ID: -wZk9DwfP7dkmhWKAAAd
+[2025-12-18 20:28:31] Nouvel utilisateur connecté - IP: ::1 - Socket ID: FDCvR8JYR3QF0mu0AAAf
+[2025-12-18 20:42:52] Nouvel utilisateur connecté - IP: ::1 - Socket ID: JbxVDzG59RSZxxnUAAAB
+[2025-12-18 20:42:56] Nouvel utilisateur connecté - IP: ::1 - Socket ID: H7n4gNRwVHBkziKVAAAB
+[2025-12-18 20:43:06] Nouvel utilisateur connecté - IP: ::1 - Socket ID: cwbTJIOI2F8JUaqbAAAB
+[2025-12-18 20:43:44] Nouvel utilisateur connecté - IP: ::1 - Socket ID: C0ECCpjtWBv_mb7YAAAD
+[2025-12-18 20:43:45] Utilisateur déconnecté - IP: ::1 - Socket ID: C0ECCpjtWBv_mb7YAAAD
+[2025-12-18 20:43:46] Nouvel utilisateur connecté - IP: ::1 - Socket ID: MoptrD2FyxNauqC-AAAF
+[2025-12-18 20:43:47] Utilisateur déconnecté - IP: ::1 - Socket ID: MoptrD2FyxNauqC-AAAF
+[2025-12-18 20:43:47] Nouvel utilisateur connecté - IP: ::1 - Socket ID: EOZ6jIHvEJse-q5rAAAI
+[2025-12-18 20:43:47] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 1zbtvZHtQ5I1-PFYAAAJ
+[2025-12-18 20:43:47] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: 1zbtvZHtQ5I1-PFYAAAJ
+[2025-12-18 20:43:48] Message chat - Pseudo: oooo - Message: cc
+[2025-12-18 20:43:49] Utilisateur déconnecté - IP: ::1 - Socket ID: 1zbtvZHtQ5I1-PFYAAAJ
+[2025-12-18 20:43:49] Utilisateur déconnecté - IP: ::1 - Socket ID: EOZ6jIHvEJse-q5rAAAI
+[2025-12-18 20:43:49] Nouvel utilisateur connecté - IP: ::1 - Socket ID: dg0jEUQiEmd93d9NAAAM
+[2025-12-18 20:43:49] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 2tb1COzvZ41I-nFrAAAN
+[2025-12-18 20:43:49] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: 2tb1COzvZ41I-nFrAAAN
+[2025-12-18 20:43:50] Utilisateur déconnecté - IP: ::1 - Socket ID: 2tb1COzvZ41I-nFrAAAN
+[2025-12-18 20:43:50] Utilisateur déconnecté - IP: ::1 - Socket ID: dg0jEUQiEmd93d9NAAAM
+[2025-12-18 20:43:50] Nouvel utilisateur connecté - IP: ::1 - Socket ID: vVxdXcqY390zTXExAAAQ
+[2025-12-18 20:43:50] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Oul9TVtvHnGsiE_1AAAR
+[2025-12-18 20:43:50] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: Oul9TVtvHnGsiE_1AAAR

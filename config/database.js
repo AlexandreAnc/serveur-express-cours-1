@@ -1,21 +1,19 @@
-var Sequelize = require('sequelize');
+var Database = require('better-sqlite3');
 var path = require('path');
 
 // Chemin vers le fichier de base de données SQLite
 // Note: .db3 et .sqlite sont des formats identiques (SQLite)
 var dbPath = path.join(__dirname, '../mds_b3dev_api_dev.db3');
 
-// Configuration de la connexion Sequelize avec SQLite
-var sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: dbPath, // Fichier SQLite existant
-  logging: false, // Mettre à true pour voir les requêtes SQL dans la console
-  define: {
-    timestamps: false, // Les tables existantes n'ont pas de timestamps
-    underscored: false, // Utilise camelCase pour les noms de colonnes
-    freezeTableName: true // Empêche Sequelize de pluraliser les noms de tables
-  }
-});
+// Créer la connexion à la base de données
+var db = new Database(dbPath);
 
-module.exports = sequelize;
+// Activer le mode WAL (Write-Ahead Logging) pour de meilleures performances
+db.pragma('journal_mode = WAL');
 
+// Activer les clés étrangères
+db.pragma('foreign_keys = ON');
+
+console.log('✓ Base de données SQLite connectée:', dbPath);
+
+module.exports = db;

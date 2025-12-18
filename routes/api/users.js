@@ -1,14 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../../models/User');
+var db = require('../../config/database');
 
 /**
  * GET /api/users
  * Récupère tous les utilisateurs
  */
-router.get('/', async function(req, res, next) {
+router.get('/', function(req, res, next) {
   try {
-    var users = await User.findAll();
+    var stmt = db.prepare('SELECT id, name, email, role FROM users');
+    var users = stmt.all();
+    
     res.json({
       success: true,
       data: users,
@@ -23,9 +25,10 @@ router.get('/', async function(req, res, next) {
  * GET /api/users/:id
  * Récupère un utilisateur par son ID
  */
-router.get('/:id', async function(req, res, next) {
+router.get('/:id', function(req, res, next) {
   try {
-    var user = await User.findByPk(req.params.id);
+    var stmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
+    var user = stmt.get(req.params.id);
     
     if (!user) {
       return res.status(404).json({
@@ -47,7 +50,7 @@ router.get('/:id', async function(req, res, next) {
  * POST /api/users
  * Crée un nouvel utilisateur
  */
-router.post('/', async function(req, res, next) {
+router.post('/', function(req, res, next) {
   try {
     var { name, email, role } = req.body;
     
@@ -61,7 +64,8 @@ router.post('/', async function(req, res, next) {
     
     // Vérifier si l'email existe déjà (unique)
     if (email) {
-      var existingUser = await User.findOne({ where: { email: email } });
+      var checkStmt = db.prepare('SELECT id FROM users WHERE email = ?');
+      var existingUser = checkStmt.get(email);
       if (existingUser) {
         return res.status(409).json({
           success: false,
@@ -71,11 +75,12 @@ router.post('/', async function(req, res, next) {
     }
     
     // Créer l'utilisateur
-    var user = await User.create({
-      name: name,
-      email: email || null,
-      role: role || null
-    });
+    var insertStmt = db.prepare('INSERT INTO users (name, email, role) VALUES (?, ?, ?)');
+    var result = insertStmt.run(name, email || null, role || null);
+    
+    // Récupérer l'utilisateur créé
+    var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
+    var user = selectStmt.get(result.lastInsertRowid);
     
     res.status(201).json({
       success: true,
@@ -83,17 +88,11 @@ router.post('/', async function(req, res, next) {
       data: user
     });
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    // Gérer les erreurs de contrainte unique (email)
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       return res.status(409).json({
         success: false,
         message: 'Cet email existe déjà'
-      });
-    }
-    if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Erreur de validation',
-        errors: error.errors.map(e => e.message)
       });
     }
     next(error);
@@ -104,11 +103,13 @@ router.post('/', async function(req, res, next) {
  * PUT /api/users/:id
  * Met à jour un utilisateur
  */
-router.put('/:id', async function(req, res, next) {
+router.put('/:id', function(req, res, next) {
   try {
-    var user = await User.findByPk(req.params.id);
+    // Vérifier que l'utilisateur existe
+    var checkStmt = db.prepare('SELECT id FROM users WHERE id = ?');
+    var existingUser = checkStmt.get(req.params.id);
     
-    if (!user) {
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
         message: 'Utilisateur non trouvé'
@@ -117,13 +118,54 @@ router.put('/:id', async function(req, res, next) {
     
     // Mettre à jour les champs fournis
     var { name, email, role } = req.body;
-    var updateData = {};
+    var updates = [];
+    var values = [];
     
-    if (name !== undefined) updateData.name = name;
-    if (email !== undefined) updateData.email = email;
-    if (role !== undefined) updateData.role = role;
+    if (name !== undefined) {
+      updates.push('name = ?');
+      values.push(name);
+    }
+    if (email !== undefined) {
+      updates.push('email = ?');
+      values.push(email);
+    }
+    if (role !== undefined) {
+      updates.push('role = ?');
+      values.push(role);
+    }
     
-    await user.update(updateData);
+    if (updates.length === 0) {
+      // Aucune mise à jour demandée, retourner l'utilisateur actuel
+      var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
+      var user = selectStmt.get(req.params.id);
+      return res.json({
+        success: true,
+        message: 'Aucune modification effectuée',
+        data: user
+      });
+    }
+    
+    // Vérifier si l'email existe déjà (si modifié)
+    if (email !== undefined) {
+      var emailCheckStmt = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?');
+      var emailExists = emailCheckStmt.get(email, req.params.id);
+      if (emailExists) {
+        return res.status(409).json({
+          success: false,
+          message: 'Cet email existe déjà'
+        });
+      }
+    }
+    
+    // Construire et exécuter la requête UPDATE
+    values.push(req.params.id);
+    var updateQuery = 'UPDATE users SET ' + updates.join(', ') + ' WHERE id = ?';
+    var updateStmt = db.prepare(updateQuery);
+    updateStmt.run.apply(updateStmt, values);
+    
+    // Récupérer l'utilisateur mis à jour
+    var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
+    var user = selectStmt.get(req.params.id);
     
     res.json({
       success: true,
@@ -131,17 +173,11 @@ router.put('/:id', async function(req, res, next) {
       data: user
     });
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    // Gérer les erreurs de contrainte unique (email)
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       return res.status(409).json({
         success: false,
         message: 'Cet email existe déjà'
-      });
-    }
-    if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Erreur de validation',
-        errors: error.errors.map(e => e.message)
       });
     }
     next(error);
@@ -152,9 +188,11 @@ router.put('/:id', async function(req, res, next) {
  * DELETE /api/users/:id
  * Supprime un utilisateur
  */
-router.delete('/:id', async function(req, res, next) {
+router.delete('/:id', function(req, res, next) {
   try {
-    var user = await User.findByPk(req.params.id);
+    // Vérifier que l'utilisateur existe
+    var checkStmt = db.prepare('SELECT id FROM users WHERE id = ?');
+    var user = checkStmt.get(req.params.id);
     
     if (!user) {
       return res.status(404).json({
@@ -163,7 +201,9 @@ router.delete('/:id', async function(req, res, next) {
       });
     }
     
-    await user.destroy();
+    // Supprimer l'utilisateur
+    var deleteStmt = db.prepare('DELETE FROM users WHERE id = ?');
+    deleteStmt.run(req.params.id);
     
     res.json({
       success: true,
@@ -175,4 +215,3 @@ router.delete('/:id', async function(req, res, next) {
 });
 
 module.exports = router;
-

@@ -11,10 +11,8 @@ var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
 var WEBSITE_TITLE = indexRouter.WEBSITE_TITLE;
 
-// Initialiser Sequelize et la base de données
-var sequelize = require('./models/index');
-var User = require('./models/User');
-var Course = require('./models/Course'); // Charger le modèle Course pour initialiser les relations
+// Initialiser la connexion à la base de données SQLite avec better-sqlite3
+var db = require('./config/database');
 
 var app = express();
 
@@ -50,15 +48,6 @@ app.use(function(req, res, next) {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Synchroniser les modèles avec la base de données (créer les tables si elles n'existent pas)
-sequelize.sync({ force: false }) // force: false = ne supprime pas les données existantes
-  .then(function() {
-    console.log('✓ Modèles synchronisés avec la base de données');
-  })
-  .catch(function(err) {
-    console.error('✗ Erreur lors de la synchronisation:', err);
-  });
 
 // Routes web (pages EJS)
 app.use('/', indexRouter);

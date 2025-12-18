@@ -82,11 +82,7 @@ serveur-express/
 ├── bin/
 │   └── www                 # Point d'entrée du serveur (initialise Socket.IO)
 ├── config/
-│   └── database.js         # Configuration Sequelize (SQLite)
-├── models/                  # Modèles Sequelize
-│   ├── index.js           # Initialisation Sequelize et associations
-│   ├── User.js            # Modèle User
-│   └── Course.js          # Modèle Course
+│   └── database.js         # Configuration better-sqlite3 (connexion SQLite)
 ├── routes/                  # Routes de l'application
 │   ├── index.js           # Routes principales (pages web)
 │   ├── users.js           # Routes utilisateurs
@@ -351,7 +347,7 @@ La page `/logs` affiche le contenu du fichier `log/latest-log.txt` s'il existe. 
 - **Express.js** : Framework web minimaliste et flexible pour Node.js, facilitant la création d'applications web et d'APIs
 - **EJS** : Moteur de template pour générer des vues HTML dynamiques
 - **Socket.IO** : Bibliothèque pour la communication en temps réel via WebSocket
-- **Sequelize** : ORM (Object-Relational Mapping) pour interagir avec la base de données SQLite
+- **better-sqlite3** : Driver SQLite performant et synchrone pour Node.js
 - **SQLite** : Base de données relationnelle légère stockée dans un fichier
 - **express-session** : Gestion des sessions utilisateur
 - **morgan** : Middleware de logging HTTP

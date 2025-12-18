@@ -1161,3 +1161,15 @@
 [2025-12-18 15:48:43] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9XU4adjJxKF6VKF4AAAB
 [2025-12-18 15:49:13] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 3plaZ9AMlBta41oHAAAB
 [2025-12-18 15:51:52] Nouvel utilisateur connecté - IP: ::1 - Socket ID: M3Qx-JRxwgJmaDAtAAAB
+[2025-12-18 16:04:02] Utilisateur déconnecté - IP: ::1 - Socket ID: M3Qx-JRxwgJmaDAtAAAB
+[2025-12-18 16:04:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: TFw2EgjFKlbbAgEtAAAD
+[2025-12-18 19:55:49] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 2mrg7hNHk18qTw-9AAAB
+[2025-12-18 19:56:41] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 0kKTOM3rhyYuJCW3AAAB
+[2025-12-18 19:56:44] Nouvel utilisateur connecté - IP: ::1 - Socket ID: pQDW16aj3nE-xAElAAAB
+[2025-12-18 19:56:48] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 39YdpmXAvBswj_gWAAAB
+[2025-12-18 19:56:51] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 6VcULdyr98uU8Pt7AAAB
+[2025-12-18 19:57:07] Nouvel utilisateur connecté - IP: ::1 - Socket ID: QYnBBhJ7hi_csMTsAAAB
+[2025-12-18 19:57:12] Nouvel utilisateur connecté - IP: ::1 - Socket ID: zlxG3QdnfJ0MKqRqAAAB
+[2025-12-18 19:57:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9XPAJM8INIzFLYvZAAAB
+[2025-12-18 19:57:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 6jHIMGYWADEt7D8XAAAB
+[2025-12-18 19:57:31] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bRm6he0mzH_-Pv8AAAAB

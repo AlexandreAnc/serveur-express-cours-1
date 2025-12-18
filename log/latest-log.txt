@@ -1160,3 +1160,4 @@
 [2025-12-18 15:47:55] Nouvel utilisateur connecté - IP: ::1 - Socket ID: V2dQJ1oY6JaTapHYAAAN
 [2025-12-18 15:48:43] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9XU4adjJxKF6VKF4AAAB
 [2025-12-18 15:49:13] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 3plaZ9AMlBta41oHAAAB
+[2025-12-18 15:51:52] Nouvel utilisateur connecté - IP: ::1 - Socket ID: M3Qx-JRxwgJmaDAtAAAB

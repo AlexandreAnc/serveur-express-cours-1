@@ -34,13 +34,11 @@ var io = socketIo(server, {
     credentials: true
   },
   // Configuration pour fonctionner derrière un reverse proxy (Nginx)
-  allowEIO3: true, // Compatibilité avec les anciennes versions
-  transports: ['websocket', 'polling'], // Permettre les deux transports
+  // Utiliser uniquement polling pour éviter les problèmes WebSocket avec Nginx
+  transports: ['polling'],
+  allowUpgrades: false,
   pingTimeout: 60000,
   pingInterval: 25000,
-  // Configuration pour les proxies
-  allowUpgrades: true,
-  // Permettre les connexions depuis différents domaines
   path: '/socket.io/'
 });
 

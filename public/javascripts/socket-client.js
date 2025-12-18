@@ -2,14 +2,13 @@
 (function() {
   // Se connecter au serveur Socket.IO avec configuration pour la production
   var socket = io({
-    // Forcer le polling si les WebSockets échouent
-    transports: ['websocket', 'polling'],
+    // Utiliser uniquement polling pour éviter les problèmes WebSocket avec Nginx
+    transports: ['polling'],
     // Réessayer automatiquement en cas d'échec
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
     reconnectionAttempts: Infinity,
-    // Timeout pour la connexion
     timeout: 20000
   });
   

@@ -1243,3 +1243,5 @@
 [2025-12-18 20:43:50] Nouvel utilisateur connecté - IP: ::1 - Socket ID: vVxdXcqY390zTXExAAAQ
 [2025-12-18 20:43:50] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Oul9TVtvHnGsiE_1AAAR
 [2025-12-18 20:43:50] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: Oul9TVtvHnGsiE_1AAAR
+[2025-12-18 20:47:51] Nouvel utilisateur connecté - IP: ::1 - Socket ID: sa8_BG1MgYXJO2vjAAAB
+[2025-12-18 20:48:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ugnmXzGmbJurlF9cAAAB

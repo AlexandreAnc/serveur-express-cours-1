@@ -9,10 +9,25 @@ var googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL || (process.env.NODE_ENV
   ? 'https://tp-api-express.alexanc.fr/auth/google/callback'
   : 'http://localhost:8080/auth/google/callback');
 
+// Log pour debug (sans afficher les secrets complets)
+if (googleClientId) {
+  console.log('✓ GOOGLE_CLIENT_ID configuré:', googleClientId.substring(0, 20) + '...');
+} else {
+  console.warn('⚠️  GOOGLE_CLIENT_ID non défini');
+}
+
+if (googleClientSecret) {
+  console.log('✓ GOOGLE_CLIENT_SECRET configuré');
+} else {
+  console.warn('⚠️  GOOGLE_CLIENT_SECRET non défini');
+}
+
+console.log('✓ GOOGLE_CALLBACK_URL:', googleCallbackUrl);
+
 if (!googleClientId || !googleClientSecret || googleClientId === 'VOTRE_CLIENT_ID' || googleClientSecret === 'VOTRE_CLIENT_SECRET') {
-  console.warn('⚠️  ATTENTION: Les credentials Google OAuth ne sont pas configurés !');
-  console.warn('   Définissez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET dans vos variables d\'environnement.');
-  console.warn('   L\'authentification Google ne fonctionnera pas sans ces credentials.');
+  console.error('✗ ERREUR: Les credentials Google OAuth ne sont pas configurés !');
+  console.error('   Définissez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET dans vos variables d\'environnement.');
+  console.error('   L\'authentification Google ne fonctionnera pas sans ces credentials.');
 }
 
 // Configuration Passport pour Google OAuth

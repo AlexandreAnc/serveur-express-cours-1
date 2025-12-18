@@ -1374,3 +1374,23 @@
 [2025-12-18 22:09:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: zbxVIL3xKE4hQTOOAAAE
 [2025-12-18 22:09:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Mh-oVN8k9OrqDwTwAAAF
 [2025-12-18 22:09:29] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: Mh-oVN8k9OrqDwTwAAAF
+[2025-12-18 22:15:16] Utilisateur déconnecté - IP: ::1 - Socket ID: Mh-oVN8k9OrqDwTwAAAF - Raison: client namespace disconnect
+[2025-12-18 22:15:16] Utilisateur déconnecté - IP: ::1 - Socket ID: zbxVIL3xKE4hQTOOAAAE - Raison: transport error
+[2025-12-18 22:15:16] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ZcWUSRmzRfSQTVgtAAAH
+[2025-12-18 22:15:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 1gGrKhwlUeaz2cGEAAAJ
+[2025-12-18 22:15:18] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 36DlESXpdzBFoducAAAL
+[2025-12-18 22:15:18] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ShwTFWLirVigwUFnAAAO
+[2025-12-18 22:15:18] Nouvel utilisateur connecté - IP: ::1 - Socket ID: SKtFKOjXsg9crvEXAAAP
+[2025-12-18 22:15:18] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: SKtFKOjXsg9crvEXAAAP
+[2025-12-18 22:15:19] Utilisateur déconnecté - IP: ::1 - Socket ID: SKtFKOjXsg9crvEXAAAP - Raison: client namespace disconnect
+[2025-12-18 22:15:19] Utilisateur déconnecté - IP: ::1 - Socket ID: ShwTFWLirVigwUFnAAAO - Raison: transport error
+[2025-12-18 22:15:19] Nouvel utilisateur connecté - IP: ::1 - Socket ID: pbmyqEtuETOHjmmYAAAR
+[2025-12-18 22:15:19] Nouvel utilisateur connecté - IP: ::1 - Socket ID: mPPYm5ucoXwMKmydAAAT
+[2025-12-18 22:16:41] Utilisateur déconnecté - IP: ::1 - Socket ID: ZcWUSRmzRfSQTVgtAAAH - Raison: ping timeout
+[2025-12-18 22:16:42] Utilisateur déconnecté - IP: ::1 - Socket ID: 1gGrKhwlUeaz2cGEAAAJ - Raison: ping timeout
+[2025-12-18 22:16:43] Utilisateur déconnecté - IP: ::1 - Socket ID: 36DlESXpdzBFoducAAAL - Raison: ping timeout
+[2025-12-18 22:16:44] Utilisateur déconnecté - IP: ::1 - Socket ID: pbmyqEtuETOHjmmYAAAR - Raison: ping timeout
+[2025-12-18 22:18:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: nqar3lo1Gle7JMamAAAC
+[2025-12-18 22:18:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: sfiSpguckyhzHFRNAAAD
+[2025-12-18 22:18:23] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Hp1Q5L89T-ftZ24_AAAB
+[2025-12-18 22:18:24] Nouvel utilisateur connecté - IP: ::1 - Socket ID: KkYOH0FgcKA_5GYqAAAD

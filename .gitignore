@@ -117,3 +117,4 @@ public/uploads/
 *.backup
 *~
 
+.env

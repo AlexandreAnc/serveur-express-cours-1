@@ -11,7 +11,6 @@ const cors = require('cors');
 const passport = require('./config/passport');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const apiRouter = require('./routes/api');
 const WEBSITE_TITLE = indexRouter.WEBSITE_TITLE;
 
@@ -63,7 +62,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes web (pages EJS)
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 // Routes API RESTful
 app.use('/api', apiRouter);

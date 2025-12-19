@@ -12,6 +12,7 @@ const RATE_LIMIT = {
  * Configure les événements Socket.IO
  * @param {Object} io - Instance Socket.IO
  */
+
 function setupSocket(io) {
   // Stocker les utilisateurs en train d'écrire (socketId -> pseudo)
   const typingUsers = {};

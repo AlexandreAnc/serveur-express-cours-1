@@ -1821,3 +1821,106 @@
 [2025-12-19 10:06:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: blQrJ_lGTfVU3T4xAAAB
 [2025-12-19 10:14:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: rwlaCi1wdvPkwtjnAAAD
 [2025-12-19 10:15:47] Utilisateur déconnecté - IP: ::1 - Socket ID: blQrJ_lGTfVU3T4xAAAB - Raison: ping timeout
+[2025-12-19 10:27:50] Utilisateur déconnecté - IP: ::1 - Socket ID: rwlaCi1wdvPkwtjnAAAD - Raison: transport error
+[2025-12-19 10:27:51] Nouvel utilisateur connecté - IP: ::1 - Socket ID: nN3LivWEeaUkfAKkAAAF
+[2025-12-19 10:27:51] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: nN3LivWEeaUkfAKkAAAF
+[2025-12-19 10:27:53] Message chat - Pseudo: oooo - Message: ccc
+[2025-12-19 10:27:56] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: nN3LivWEeaUkfAKkAAAF
+[2025-12-19 10:27:58] Message chat - Pseudo: ouiii - Message: salut
+[2025-12-19 10:27:59] Utilisateur déconnecté - IP: ::1 - Socket ID: nN3LivWEeaUkfAKkAAAF - Raison: client namespace disconnect
+[2025-12-19 10:27:59] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bgDbNpZvYpGgmZG0AAAH
+[2025-12-19 10:27:59] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: bgDbNpZvYpGgmZG0AAAH
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: bgDbNpZvYpGgmZG0AAAH - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: gkikvaEMjjcu59OHAAAJ
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: gkikvaEMjjcu59OHAAAJ
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: gkikvaEMjjcu59OHAAAJ - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: No_Dn02fQ01OaI9cAAAL
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: No_Dn02fQ01OaI9cAAAL
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: No_Dn02fQ01OaI9cAAAL - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: iZewhQo5n9XwOE7HAAAN
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: iZewhQo5n9XwOE7HAAAN
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: iZewhQo5n9XwOE7HAAAN - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: _GhG0vP7PO3DasiSAAAP
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: _GhG0vP7PO3DasiSAAAP
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: _GhG0vP7PO3DasiSAAAP - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: zIVMCM_K_5hPT_8KAAAR
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: zIVMCM_K_5hPT_8KAAAR
+[2025-12-19 10:28:00] Utilisateur déconnecté - IP: ::1 - Socket ID: zIVMCM_K_5hPT_8KAAAR - Raison: client namespace disconnect
+[2025-12-19 10:28:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: mBMrYOFo7JDLn4M4AAAT
+[2025-12-19 10:28:00] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: mBMrYOFo7JDLn4M4AAAT
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: mBMrYOFo7JDLn4M4AAAT - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: haQg8A8CoyDfJ0OJAAAV
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: haQg8A8CoyDfJ0OJAAAV
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: haQg8A8CoyDfJ0OJAAAV - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: mFNkbqwhZPPnHTAtAAAX
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: mFNkbqwhZPPnHTAtAAAX
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: mFNkbqwhZPPnHTAtAAAX - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 5Clruggp_F0M_7sSAAAZ
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: 5Clruggp_F0M_7sSAAAZ
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: 5Clruggp_F0M_7sSAAAZ - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bqhNCBCZb78lR8ynAAAb
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: bqhNCBCZb78lR8ynAAAb
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: bqhNCBCZb78lR8ynAAAb - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: NdXKUuOfHoQMjFkEAAAd
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: NdXKUuOfHoQMjFkEAAAd
+[2025-12-19 10:28:01] Utilisateur déconnecté - IP: ::1 - Socket ID: NdXKUuOfHoQMjFkEAAAd - Raison: client namespace disconnect
+[2025-12-19 10:28:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: jG2Rsbe2G98_KWh8AAAf
+[2025-12-19 10:28:01] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: jG2Rsbe2G98_KWh8AAAf
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: jG2Rsbe2G98_KWh8AAAf - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: nXa20x7J4r_qqvNzAAAh
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: nXa20x7J4r_qqvNzAAAh
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: nXa20x7J4r_qqvNzAAAh - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: n2QFquoLuUXHpqHJAAAj
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: n2QFquoLuUXHpqHJAAAj
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: n2QFquoLuUXHpqHJAAAj - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 1d0Xrg5CF4vK0WXuAAAl
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: 1d0Xrg5CF4vK0WXuAAAl
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: 1d0Xrg5CF4vK0WXuAAAl - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Se0YjVpukpJj_yG4AAAn
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: Se0YjVpukpJj_yG4AAAn
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: Se0YjVpukpJj_yG4AAAn - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 98WZ0WxZG6W_L_FIAAAp
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: 98WZ0WxZG6W_L_FIAAAp
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: 98WZ0WxZG6W_L_FIAAAp - Raison: transport error
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: iQPCC74NtdW0mYzNAAAr
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: iQPCC74NtdW0mYzNAAAr
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: iQPCC74NtdW0mYzNAAAr - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: eK0XLztJP6nF79WZAAAt
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: eK0XLztJP6nF79WZAAAt
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: eK0XLztJP6nF79WZAAAt - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: i9FdjkvPWWGTBkqxAAAv
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: i9FdjkvPWWGTBkqxAAAv
+[2025-12-19 10:28:02] Utilisateur déconnecté - IP: ::1 - Socket ID: i9FdjkvPWWGTBkqxAAAv - Raison: client namespace disconnect
+[2025-12-19 10:28:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: nc7HtI7mpG-zbOmxAAAx
+[2025-12-19 10:28:02] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: nc7HtI7mpG-zbOmxAAAx
+[2025-12-19 10:28:03] Utilisateur déconnecté - IP: ::1 - Socket ID: nc7HtI7mpG-zbOmxAAAx - Raison: client namespace disconnect
+[2025-12-19 10:28:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Zw9WGBhvhtUj93KcAAAz
+[2025-12-19 10:28:03] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: Zw9WGBhvhtUj93KcAAAz
+[2025-12-19 10:28:03] Utilisateur déconnecté - IP: ::1 - Socket ID: Zw9WGBhvhtUj93KcAAAz - Raison: client namespace disconnect
+[2025-12-19 10:28:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 3YM3bsKt_X9tadTCAAA1
+[2025-12-19 10:28:03] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: 3YM3bsKt_X9tadTCAAA1
+[2025-12-19 10:28:03] Utilisateur déconnecté - IP: ::1 - Socket ID: 3YM3bsKt_X9tadTCAAA1 - Raison: client namespace disconnect
+[2025-12-19 10:28:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: GIJMvdZe0_RpkUBNAAA3
+[2025-12-19 10:28:03] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: GIJMvdZe0_RpkUBNAAA3
+[2025-12-19 10:28:03] Utilisateur déconnecté - IP: ::1 - Socket ID: GIJMvdZe0_RpkUBNAAA3 - Raison: client namespace disconnect
+[2025-12-19 10:28:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: NL0WFdb2kfesI-doAAA5
+[2025-12-19 10:28:03] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: NL0WFdb2kfesI-doAAA5
+[2025-12-19 10:28:03] Utilisateur déconnecté - IP: ::1 - Socket ID: NL0WFdb2kfesI-doAAA5 - Raison: client namespace disconnect
+[2025-12-19 10:28:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: NmGyqebkh6E-CNnlAAA7
+[2025-12-19 10:28:03] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: NmGyqebkh6E-CNnlAAA7
+[2025-12-19 10:42:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: VbjZtk5w7BCKp2JyAAAB
+[2025-12-19 10:42:10] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: VbjZtk5w7BCKp2JyAAAB
+[2025-12-19 10:42:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 88jlYExEJT6xOC-3AAAB
+[2025-12-19 10:42:26] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: 88jlYExEJT6xOC-3AAAB
+[2025-12-19 10:42:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ccVPxhU20TmaxmtYAAAB
+[2025-12-19 10:42:28] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: ccVPxhU20TmaxmtYAAAB
+[2025-12-19 11:06:20] Nouvel utilisateur connecté - IP: ::1 - Socket ID: INuoWHB8nrjBURgFAAAB
+[2025-12-19 11:06:20] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: INuoWHB8nrjBURgFAAAB
+[2025-12-19 11:07:12] Nouvel utilisateur connecté - IP: ::1 - Socket ID: wiEjcDaFF5ZhW7qeAAAB
+[2025-12-19 11:07:12] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: wiEjcDaFF5ZhW7qeAAAB
+[2025-12-19 11:08:38] Nouvel utilisateur connecté - IP: ::1 - Socket ID: OvkFdB6FXVh1SSArAAAB
+[2025-12-19 11:08:38] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: OvkFdB6FXVh1SSArAAAB
+[2025-12-19 11:08:44] Nouvel utilisateur connecté - IP: ::1 - Socket ID: JIJTeszrMF4mt532AAAB
+[2025-12-19 11:08:45] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: JIJTeszrMF4mt532AAAB
+[2025-12-19 11:08:52] Nouvel utilisateur connecté - IP: ::1 - Socket ID: RlGd7LVZEE0viMutAAAB
+[2025-12-19 11:08:52] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: RlGd7LVZEE0viMutAAAB

@@ -1,9 +1,9 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 // Chemin vers le fichier de log
-var logDir = path.join(__dirname, '../log');
-var logFile = path.join(logDir, 'latest-log.txt');
+const logDir = path.join(__dirname, '../log');
+const logFile = path.join(logDir, 'latest-log.txt');
 
 /**
  * S'assure que le dossier log existe
@@ -22,9 +22,9 @@ function writeLog(message) {
   try {
     ensureLogDir();
     
-    var now = new Date();
-    var timestamp = now.toISOString().replace('T', ' ').substring(0, 19);
-    var logMessage = '[' + timestamp + '] ' + message + '\n';
+    const now = new Date();
+    const timestamp = now.toISOString().replace('T', ' ').substring(0, 19);
+    const logMessage = '[' + timestamp + '] ' + message + '\n';
     
     // Ajouter le message au fichier (append)
     fs.appendFileSync(logFile, logMessage, 'utf8');

@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs');
-var path = require('path');
-var passport = require('../config/passport');
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const passport = require('../config/passport');
 
 // Configuration du site
-var WEBSITE_TITLE = 'TP_Express';
+const WEBSITE_TITLE = 'TP_Express';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -47,8 +47,8 @@ router.get('/chat', function(req, res, next) {
 /* GET logs page. */
 router.get('/logs', function(req, res, next) {
   // Lire les logs depuis le fichier si il existe
-  var logPath = path.join(__dirname, '../log/latest-log.txt');
-  var logs = '';
+  const logPath = path.join(__dirname, '../log/latest-log.txt');
+  let logs = '';
   
   try {
     if (fs.existsSync(logPath)) {
@@ -67,7 +67,7 @@ router.get('/logs', function(req, res, next) {
 
 /* GET download file. */
 router.get('/download', function(req, res, next) {
-  var imagePath = path.join(__dirname, '../public/images/dl.png');
+  const imagePath = path.join(__dirname, '../public/images/dl.png');
   
   // Vérifier si le fichier existe
   if (!fs.existsSync(imagePath)) {
@@ -80,16 +80,16 @@ router.get('/download', function(req, res, next) {
   res.setHeader('Expires', '0');
   
   // Générer le nom de fichier avec la date/heure (actualisé à chaque clic)
-  var now = new Date(); 
-  var year = now.getFullYear();
-  var month = String(now.getMonth() + 1).padStart(2, '0');
-  var day = String(now.getDate()).padStart(2, '0');
-  var hours = String(now.getHours()).padStart(2, '0');
-  var minutes = String(now.getMinutes()).padStart(2, '0');
-  var seconds = String(now.getSeconds()).padStart(2, '0');
-  var milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  const now = new Date(); 
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
   
-  var fileName = year + month + day + '_' + hours + minutes + seconds + '_' + milliseconds + '.txt';
+  const fileName = year + month + day + '_' + hours + minutes + seconds + '_' + milliseconds + '.txt';
   
   // Télécharger le fichier avec le nouveau nom
   res.download(imagePath, fileName, function(err) {
@@ -140,8 +140,8 @@ router.get('/auth/google/callback',
 
 /* POST login - traitement du formulaire. */
 router.post('/login', function(req, res, next) {
-  var username = req.body.username;
-  var password = req.body.password;
+  const username = req.body.username;
+  const password = req.body.password;
   
   // Vérifier les identifiants (admin/admin)
   if (username === 'admin' && password === 'admin') {

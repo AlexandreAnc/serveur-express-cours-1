@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 // Importer les routes API
-var usersRouter = require('./users');
-var coursesRouter = require('./courses');
+const usersRouter = require('./users');
+const coursesRouter = require('./courses');
 
 // Routes API
 router.use('/users', usersRouter);

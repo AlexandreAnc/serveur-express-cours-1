@@ -1,9 +1,9 @@
-// Modèle Course avec Sequelize (pour validation ORM)
-var { DataTypes } = require('sequelize');
-var sequelize = require('../config/sequelize');
-var User = require('./User');
+// Modèle Course avec Sequelize ORM
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const User = require('./User');
 
-var Course = sequelize.define('Course', {
+const Course = sequelize.define('Course', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

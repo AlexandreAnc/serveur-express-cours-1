@@ -1,11 +1,11 @@
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var db = require('./database');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const User = require('../models/User');
 
 // Vérifier que les credentials Google sont configurés
-var googleClientId = process.env.GOOGLE_CLIENT_ID;
-var googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-var googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL || (process.env.NODE_ENV === 'production' 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const googleCallbackUrl = process.env.GOOGLE_CALLBACK_URL || (process.env.NODE_ENV === 'production' 
   ? 'https://tp-api-express.alexanc.fr/auth/google/callback'
   : 'http://localhost:8080/auth/google/callback');
 
@@ -36,14 +36,13 @@ passport.use(new GoogleStrategy({
     clientSecret: googleClientSecret || 'VOTRE_CLIENT_SECRET',
     callbackURL: googleCallbackUrl
   },
-  function(accessToken, refreshToken, profile, done) {
+  async function(accessToken, refreshToken, profile, done) {
     // Cette fonction est appelée après l'authentification réussie avec Google
     // profile contient les informations de l'utilisateur Google
     
     try {
       // Vérifier si l'utilisateur existe déjà dans la base de données
-      var stmt = db.prepare('SELECT * FROM users WHERE email = ?');
-      var user = stmt.get(profile.emails[0].value);
+      let user = await User.findOne({ where: { email: profile.emails[0].value } });
       
       if (user) {
         // Utilisateur existant, retourner les informations
@@ -57,23 +56,18 @@ passport.use(new GoogleStrategy({
         });
       } else {
         // Nouvel utilisateur, le créer dans la base de données
-        var insertStmt = db.prepare('INSERT INTO users (name, email, role) VALUES (?, ?, ?)');
-        var result = insertStmt.run(
-          profile.displayName,
-          profile.emails[0].value,
-          'user'
-        );
-        
-        // Récupérer l'utilisateur créé
-        var selectStmt = db.prepare('SELECT * FROM users WHERE id = ?');
-        var newUser = selectStmt.get(result.lastInsertRowid);
+        user = await User.create({
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          role: 'user'
+        });
         
         return done(null, {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
+          id: user.id,
+          name: user.name,
+          email: user.email,
           login: profile.displayName,
-          role: newUser.role || 'user',
+          role: user.role || 'user',
           googleId: profile.id
         });
       }
@@ -89,10 +83,9 @@ passport.serializeUser(function(user, done) {
 });
 
 // Désérialiser l'utilisateur depuis la session
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(async function(id, done) {
   try {
-    var stmt = db.prepare('SELECT * FROM users WHERE id = ?');
-    var user = stmt.get(id);
+    const user = await User.findByPk(id);
     
     if (user) {
       done(null, {

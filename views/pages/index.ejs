@@ -3,18 +3,203 @@
 
 <head>
 <%- include('../layout/head', { title: title }) %>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+        margin-bottom: 60px;
+        border-radius: 0 0 24px 24px;
+    }
+
+    .hero-section h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .hero-section p {
+        font-size: 1.25rem;
+        opacity: 0.95;
+        max-width: 600px;
+        margin: 0 auto 30px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 60px 20px;
+        }
+
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .hero-section p {
+            font-size: 1.1rem;
+        }
+
+        .features-section {
+            padding: 0 15px;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-section h1 {
+            font-size: 1.75rem;
+        }
+
+        .hero-section p {
+            font-size: 1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .hero-button {
+            width: 100%;
+        }
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-button {
+        padding: 14px 28px;
+        background: white;
+        color: #2563eb;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    .hero-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-button.secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .hero-button.secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .features-section {
+        max-width: 1200px;
+        margin: 0 auto 60px;
+        padding: 0 20px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-top: 40px;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+
+    .feature-card p {
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+    }
+</style>
 </head>
 
 <body>
     <%- include('../layout/header') %>
 
-    <main class="container">
-        <div style="text-align: center;">
-            <% if (isAuthenticated && user) { %>
-                <h2>Bienvenue <%= user.login %></h2>
-            <% } %>
-            <h2>Bienvenue sur mon site</h2>
-            <p>Ceci est la page d'accueil.</p>
+    <main>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>Bienvenue sur notre plateforme</h1>
+            <p>Découvrez nos formations de qualité et développez vos compétences avec des experts passionnés.</p>
+            <div class="hero-buttons">
+                <a href="/courses" class="hero-button">Découvrir les cours</a>
+                <a href="/contact" class="hero-button secondary">Nous contacter</a>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2 class="section-title">Pourquoi nous choisir ?</h2>
+            <p class="section-subtitle">Une expérience d'apprentissage exceptionnelle vous attend</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Formations de qualité</h3>
+                    <p>Des cours conçus par des professionnels expérimentés pour vous offrir le meilleur contenu pédagogique.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Chat en temps réel</h3>
+                    <p>Échangez avec la communauté et posez vos questions directement via notre système de chat interactif.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Apprentissage flexible</h3>
+                    <p>Apprenez à votre rythme, quand vous voulez et où vous voulez. Accédez à vos cours 24/7.</p>
+                </div>
+            </div>
         </div>
     </main>
 

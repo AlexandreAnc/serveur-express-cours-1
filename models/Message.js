@@ -1,8 +1,8 @@
-// Modèle Message avec Sequelize (pour validation ORM)
-var { DataTypes } = require('sequelize');
-var sequelize = require('../config/sequelize');
+// Modèle Message avec Sequelize ORM
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-var Message = sequelize.define('Message', {
+const Message = sequelize.define('Message', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

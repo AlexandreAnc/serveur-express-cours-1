@@ -48,22 +48,40 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
+    .course-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
     .course-card-header {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white;
         padding: 20px;
+        background: white;
     }
 
     .course-card-title {
         font-size: 1.5rem;
         font-weight: 600;
         margin: 0 0 8px 0;
+        color: #1f2937;
     }
 
     .course-card-instructor {
         font-size: 0.9rem;
-        opacity: 0.9;
+        color: #6b7280;
+        margin: 0 0 12px 0;
+    }
+
+    .course-card-description {
+        font-size: 0.95rem;
+        color: #6b7280;
+        line-height: 1.6;
         margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .course-card-body {
@@ -134,6 +152,43 @@
         margin-bottom: 10px;
         color: #6b7280;
     }
+
+    @media (max-width: 768px) {
+        .courses-container {
+            padding: 0 15px;
+        }
+
+        .courses-header h1 {
+            font-size: 2rem;
+        }
+
+        .courses-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .course-card-header {
+            padding: 16px;
+        }
+
+        .course-card-body {
+            padding: 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .courses-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .course-card-title {
+            font-size: 1.25rem;
+        }
+
+        .course-card-price {
+            font-size: 1.5rem;
+        }
+    }
 </style>
 </head>
 
@@ -200,7 +255,7 @@
                 const grid = document.createElement('div');
                 grid.className = 'courses-grid';
                 
-                courses.forEach(function(course) {
+                courses.forEach(function(course, index) {
                     const card = document.createElement('div');
                     card.className = 'course-card';
                     
@@ -208,10 +263,20 @@
                         ? formatInstructorName(course.instructor.name)
                         : 'Instructeur inconnu';
                     
+                    // Générer une image aléatoire via Picsum Photos (API d'images aléatoires)
+                    // Utiliser l'ID du cours comme seed pour avoir une image cohérente
+                    const imageSeed = course.id || index;
+                    const imageUrl = `https://picsum.photos/seed/${imageSeed}/400/200`;
+                    
+                    // Description par défaut si pas de description dans l'API
+                    const description = course.description || 'Découvrez ce cours passionnant conçu par des experts pour vous accompagner dans votre apprentissage.';
+                    
                     card.innerHTML = `
+                        <img src="${imageUrl}" alt="${escapeHtml(course.title || 'Cours')}" class="course-card-image" loading="lazy">
                         <div class="course-card-header">
                             <h3 class="course-card-title">${escapeHtml(course.title || 'Sans titre')}</h3>
                             <p class="course-card-instructor">Instructeur : ${escapeHtml(instructorName)}</p>
+                            <p class="course-card-description">${escapeHtml(description)}</p>
                         </div>
                         <div class="course-card-body">
                             <div class="course-card-price">${course.price || 0}</div>

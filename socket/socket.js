@@ -1,9 +1,9 @@
-var logger = require('../utils/logger');
-var wordFilter = require('../utils/wordFilter');
-var db = require('../config/database');
+const logger = require('../utils/logger');
+const wordFilter = require('../utils/wordFilter');
+const Message = require('../models/Message');
 
 // Configuration anti-spam
-var RATE_LIMIT = {
+const RATE_LIMIT = {
   maxMessages: 5,      // Nombre maximum de messages
   timeWindow: 10000    // Fenêtre de temps en millisecondes (10 secondes)
 };
@@ -14,23 +14,23 @@ var RATE_LIMIT = {
  */
 function setupSocket(io) {
   // Stocker les utilisateurs en train d'écrire (socketId -> pseudo)
-  var typingUsers = {};
+  const typingUsers = {};
   
   // Stocker les utilisateurs qui ont rejoint le chat (socketId -> pseudo)
-  var connectedUsers = {};
+  const connectedUsers = {};
   
   // Stocker les pseudos actifs pour éviter les doublons (pseudo -> socketId)
-  var pseudoToSocketId = {};
+  const pseudoToSocketId = {};
   
   // Fonction pour diffuser la liste des utilisateurs en train d'écrire
   function broadcastTypingUsers() {
-    var typingList = Object.values(typingUsers);
+    const typingList = Object.values(typingUsers);
     io.emit('typing-users', { users: typingList });
   }
   
   // Fonction pour nettoyer une connexion utilisateur
   function cleanupUser(socketId) {
-    var pseudo = connectedUsers[socketId];
+    const pseudo = connectedUsers[socketId];
     if (pseudo) {
       delete connectedUsers[socketId];
       // Nettoyer aussi le mapping pseudo -> socketId si c'est le bon socket
@@ -42,15 +42,18 @@ function setupSocket(io) {
   
   // Fonction pour diffuser le nombre d'utilisateurs connectés (uniquement ceux qui ont rejoint)
   function broadcastUserCount() {
-    var userCount = Object.keys(connectedUsers).length;
+    const userCount = Object.keys(connectedUsers).length;
     io.emit('user-count', { count: userCount });
   }
   
   // Fonction pour récupérer les 5 derniers messages de l'historique
-  function getLastMessages(limit) {
+  async function getLastMessages(limit) {
     try {
-      var stmt = db.prepare('SELECT pseudo, message, timestamp FROM messages ORDER BY id DESC LIMIT ?');
-      var messages = stmt.all(limit || 5);
+      const messages = await Message.findAll({
+        order: [['id', 'DESC']],
+        limit: limit || 5,
+        attributes: ['pseudo', 'message', 'timestamp']
+      });
       // Inverser pour avoir les plus anciens en premier
       return messages.reverse();
     } catch (error) {
@@ -60,14 +63,29 @@ function setupSocket(io) {
   }
   
   // Fonction pour sauvegarder un message dans la base de données
-  function saveMessage(pseudo, message, timestamp) {
+  async function saveMessage(pseudo, message, timestamp) {
     try {
-      var insertStmt = db.prepare('INSERT INTO messages (pseudo, message, timestamp) VALUES (?, ?, ?)');
-      insertStmt.run(pseudo, message, timestamp);
+      await Message.create({
+        pseudo,
+        message,
+        timestamp
+      });
       
       // Garder seulement les 5 derniers messages (supprimer les anciens)
-      var deleteStmt = db.prepare('DELETE FROM messages WHERE id NOT IN (SELECT id FROM messages ORDER BY id DESC LIMIT 5)');
-      deleteStmt.run();
+      const allMessages = await Message.findAll({
+        order: [['id', 'DESC']],
+        attributes: ['id']
+      });
+      
+      if (allMessages.length > 5) {
+        const messagesToDelete = allMessages.slice(5);
+        const idsToDelete = messagesToDelete.map(m => m.id);
+        await Message.destroy({
+          where: {
+            id: idsToDelete
+          }
+        });
+      }
     } catch (error) {
       logger.writeLog('Erreur lors de la sauvegarde du message: ' + error.message);
     }
@@ -75,7 +93,7 @@ function setupSocket(io) {
   
   io.on('connection', function(socket) {
     // Récupérer l'adresse IP du client
-    var clientIp = socket.request.connection.remoteAddress || 
+    const clientIp = socket.request.connection.remoteAddress || 
                    socket.request.headers['x-forwarded-for'] || 
                    'unknown';
     
@@ -86,11 +104,11 @@ function setupSocket(io) {
     socket.messageTimestamps = [];
     
     // Timer pour arrêter automatiquement le "typing" après 3 secondes d'inactivité
-    var typingTimeout = null;
+    let typingTimeout = null;
     
     // Fonction pour vérifier le rate limit
     function checkRateLimit() {
-      var now = Date.now();
+      const now = Date.now();
       
       // Nettoyer les timestamps anciens (hors de la fenêtre de temps)
       socket.messageTimestamps = socket.messageTimestamps.filter(function(timestamp) {
@@ -108,16 +126,16 @@ function setupSocket(io) {
     }
     
     // Événement quand un utilisateur rejoint le chat avec son pseudo
-    socket.on('join-chat', function(data) {
-      var pseudo = data.pseudo || 'Anonyme';
+    socket.on('join-chat', async function(data) {
+      const pseudo = data.pseudo || 'Anonyme';
       
       // Si ce pseudo est déjà connecté avec un autre socket, nettoyer l'ancienne connexion
       if (pseudoToSocketId[pseudo] && pseudoToSocketId[pseudo] !== socket.id) {
-        var oldSocketId = pseudoToSocketId[pseudo];
+        const oldSocketId = pseudoToSocketId[pseudo];
         // Nettoyer l'ancienne connexion
         cleanupUser(oldSocketId);
         // Déconnecter l'ancien socket s'il existe encore
-        var oldSocket = io.sockets.sockets.get(oldSocketId);
+        const oldSocket = io.sockets.sockets.get(oldSocketId);
         if (oldSocket) {
           oldSocket.disconnect(true);
         }
@@ -135,7 +153,7 @@ function setupSocket(io) {
       logger.writeLog('Utilisateur rejoint le chat - Pseudo: ' + pseudo + ' - Socket ID: ' + socket.id);
       
       // Envoyer l'historique des 5 derniers messages au nouvel utilisateur
-      var lastMessages = getLastMessages(5);
+      const lastMessages = await getLastMessages(5);
       if (lastMessages.length > 0) {
         socket.emit('chat-history', {
           messages: lastMessages
@@ -152,7 +170,7 @@ function setupSocket(io) {
     });
     
     // Événement pour recevoir un message
-    socket.on('chat-message', function(data) {
+    socket.on('chat-message', async function(data) {
       // Vérifier le rate limit
       if (!checkRateLimit()) {
         // Rate limit dépassé, envoyer un message d'erreur au client
@@ -164,8 +182,8 @@ function setupSocket(io) {
         return;
       }
       
-      var pseudo = socket.pseudo || data.pseudo || 'Anonyme';
-      var message = data.message || '';
+      let pseudo = socket.pseudo || data.pseudo || 'Anonyme';
+      let message = data.message || '';
       
       // Vérifier que le message n'est pas vide
       if (!message.trim()) {
@@ -178,7 +196,7 @@ function setupSocket(io) {
       }
       
       // Filtrer les mots interdits
-      var originalMessage = message;
+      const originalMessage = message;
       message = wordFilter.filterMessage(message);
       
       // Logger le message (original pour les logs, filtré pour l'affichage)
@@ -189,10 +207,10 @@ function setupSocket(io) {
       }
       
       // Créer le timestamp
-      var timestamp = new Date().toISOString();
+      const timestamp = new Date().toISOString();
       
-      // Sauvegarder le message dans la base de données
-      saveMessage(pseudo, message, timestamp);
+        // Sauvegarder le message dans la base de données
+        await saveMessage(pseudo, message, timestamp);
       
       // Diffuser le message filtré à tous les utilisateurs
       io.emit('new-message', {
@@ -210,7 +228,7 @@ function setupSocket(io) {
     
     // Événement quand un utilisateur est en train d'écrire
     socket.on('typing', function() {
-      var pseudo = socket.pseudo;
+      let pseudo = socket.pseudo;
       if (!pseudo) {
         return;
       }

@@ -1,8 +1,8 @@
-// Modèle User avec Sequelize (pour validation ORM)
-var { DataTypes } = require('sequelize');
-var sequelize = require('../config/sequelize');
+// Modèle User avec Sequelize ORM
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-var User = sequelize.define('User', {
+const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

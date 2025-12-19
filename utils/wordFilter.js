@@ -1,13 +1,13 @@
-var badWordsList = require('badwords-list');
+const badWordsList = require('badwords-list');
 
 // Liste de mots interdits (combinaison de badwords-list + mots français)
-var BANNED_WORDS = [];
+let BANNED_WORDS = [];
 
 // Ajouter les mots de badwords-list (anglais)
 BANNED_WORDS = BANNED_WORDS.concat(badWordsList.array);
 
 // Ajouter des mots français courants
-var frenchBadWords = [
+const frenchBadWords = [
   'merde', 'putain', 'con', 'connard', 'connasse'
 ];
 
@@ -37,13 +37,13 @@ function filterMessage(message) {
   }
   
   try {
-    var filteredMessage = message;
+    let filteredMessage = message;
     
     // Parcourir chaque mot interdit
     BANNED_WORDS.forEach(function(bannedWord) {
       // Créer une expression régulière pour trouver le mot (insensible à la casse)
       // \b pour les limites de mots, gi pour global et insensible à la casse
-      var regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'gi');
+      const regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'gi');
       
       // Remplacer le mot par des astérisques
       filteredMessage = filteredMessage.replace(regex, function(match) {
@@ -70,10 +70,10 @@ function isProfane(message) {
   }
   
   try {
-    var messageLower = message.toLowerCase();
+    const messageLower = message.toLowerCase();
     return BANNED_WORDS.some(function(bannedWord) {
       // Vérifier si le mot interdit est présent dans le message
-      var regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'i');
+      const regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'i');
       return regex.test(messageLower);
     });
   } catch (error) {

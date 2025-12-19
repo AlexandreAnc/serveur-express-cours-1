@@ -1,7 +1,7 @@
 // Connexion Socket.IO automatique
 (function() {
   // Se connecter au serveur Socket.IO avec configuration pour la production
-  var socket = io({
+  const socket = io({
     // Utiliser uniquement polling pour éviter les problèmes WebSocket avec Nginx
     transports: ['polling'],
     // Réessayer automatiquement en cas d'échec

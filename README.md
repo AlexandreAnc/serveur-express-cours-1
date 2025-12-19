@@ -13,6 +13,13 @@ Application web développée avec Express.js et EJS, incluant un système d'auth
 - [Routes disponibles](#routes-disponibles)
 - [API RESTful](#api-restful)
 - [Fonctionnalités](#fonctionnalités)
+  - [Authentification OAuth avec Google](#authentification-oauth-avec-google)
+  - [Chat en temps réel avec Socket.IO](#chat-en-temps-réel-avec-socketio)
+  - [Filtrage des mots interdits](#filtrage-des-mots-interdits)
+  - [Base de données : Better-SQLite3](#base-de-données-better-sqlite3)
+  - [Architecture de l'API RESTful](#architecture-de-lapi-restful)
+  - [Design responsive](#design-responsive)
+  - [Améliorations front-end](#améliorations-front-end)
 - [Technologies utilisées](#technologies-utilisées)
 - [Déploiement](#déploiement)
 
@@ -50,16 +57,29 @@ npm install
 
 ### Variables d'environnement
 
-Le serveur utilise le port défini dans la variable d'environnement `PORT`, ou le port `8080` par défaut.
+Le serveur utilise le fichier `.env` (chargé via `dotenv`) pour les variables d'environnement.
 
-Pour définir un port personnalisé :
-```bash
-export PORT=3000
+**Variables requises :**
+
+- `PORT` : Port d'écoute du serveur (défaut : `8080`)
+
+**Variables optionnelles (pour OAuth Google) :**
+
+- `GOOGLE_CLIENT_ID` : ID client OAuth depuis Google Cloud Console
+- `GOOGLE_CLIENT_SECRET` : Secret client OAuth
+- `GOOGLE_CALLBACK_URL` : URL de callback (auto-configurée selon l'environnement)
+
+**Exemple de fichier `.env` :**
+```env
+PORT=8080
+GOOGLE_CLIENT_ID=votre_client_id_google
+GOOGLE_CLIENT_SECRET=votre_client_secret_google
+GOOGLE_CALLBACK_URL=http://localhost:8080/auth/google/callback
 ```
 
-### Configuration de la session
-
-⚠️ **Important** : Le secret de session dans `app.js` doit être modifié en production pour des raisons de sécurité.
+⚠️ **Important** : 
+- Le fichier `.env` ne doit **jamais** être commité dans Git (déjà dans `.gitignore`)
+- Le secret de session dans `app.js` doit être modifié en production pour des raisons de sécurité
 
 ## ▶️ Démarrage
 
@@ -324,6 +344,217 @@ curl -X DELETE http://localhost:8080/api/courses/1
 - **Déconnexion** : Destruction de la session et redirection vers l'accueil
 - **Protection** : Les informations de session sont disponibles dans toutes les vues via `res.locals`
 
+#### Authentification OAuth avec Google
+
+L'application intègre **Passport.js** avec la stratégie **Google OAuth 2.0** (`passport-google-oauth20`) pour permettre aux utilisateurs de se connecter avec leur compte Google.
+
+**Mise en place technique :**
+
+1. **Configuration Passport** (`config/passport.js`) :
+   - Utilisation de la `GoogleStrategy` de Passport.js
+   - Variables d'environnement requises :
+     - `GOOGLE_CLIENT_ID` : ID client OAuth depuis Google Cloud Console
+     - `GOOGLE_CLIENT_SECRET` : Secret client OAuth
+     - `GOOGLE_CALLBACK_URL` : URL de callback (auto-configurée selon l'environnement)
+   - **Sérialisation/Désérialisation** : Les utilisateurs sont sérialisés dans la session via `passport.serializeUser()` et `passport.deserializeUser()`
+   - **Création automatique** : Si un utilisateur Google n'existe pas dans la base, il est automatiquement créé dans la table `users`
+
+2. **Routes OAuth** (`routes/index.js`) :
+   - `GET /auth/google` : Démarre le flux OAuth (redirige vers Google)
+   - `GET /auth/google/callback` : Callback après authentification Google, sauvegarde dans `req.session.user`
+
+3. **Intégration Express** (`app.js`) :
+   - `passport.initialize()` : Initialise Passport
+   - `passport.session()` : Active la gestion de session Passport
+   - Middleware pour passer `req.user` et `isAuthenticated` aux vues via `res.locals`
+
+**Flux d'authentification :**
+```
+Utilisateur clique sur "Se connecter avec Google"
+    ↓
+GET /auth/google → passport.authenticate('google')
+    ↓
+Redirection vers Google (consentement)
+    ↓
+Google redirige vers /auth/google/callback
+    ↓
+Passport vérifie/crée l'utilisateur dans la DB
+    ↓
+Session créée → Redirection vers /
+```
+
+### Chat en temps réel avec Socket.IO
+
+L'application intègre un système de chat en temps réel utilisant **Socket.IO** (basé sur **WebSocket**).
+
+**Architecture technique :**
+
+1. **Initialisation (`bin/www`) :**
+   - Socket.IO est initialisé sur le serveur HTTP Express
+   - Configuration pour fonctionner derrière un reverse proxy (Nginx) :
+     - `transports: ['polling']` : Force l'utilisation du polling HTTP long-polling (plus stable que WebSocket pur derrière Nginx)
+     - `allowUpgrades: false` : Empêche la mise à niveau vers WebSocket
+     - `path: '/socket.io/'` : Chemin personnalisé pour Socket.IO
+     - `cors` : Configuration CORS pour autoriser les connexions cross-origin
+
+2. **Configuration serveur** (`socket/socket.js`) :
+   - **Événements gérés** :
+     - `connection` : Nouvelle connexion Socket.IO
+     - `join-chat` : Utilisateur rejoint le chat avec un pseudo
+     - `chat-message` : Réception d'un message
+     - `typing` / `stop-typing` : Indicateur de frappe en temps réel
+     - `disconnect` : Déconnexion d'un utilisateur
+   - **Gestion des utilisateurs** :
+     - `connectedUsers` : Objet stockant les utilisateurs connectés (socketId → pseudo)
+     - `pseudoToSocketId` : Mapping pseudo → socketId pour éviter les doublons
+     - `cleanupUser()` : Fonction de nettoyage pour gérer les rafraîchissements rapides
+   - **Rate limiting** : Protection anti-spam
+     - Maximum 5 messages par fenêtre de 10 secondes
+     - Stockage des timestamps dans `socket.messageTimestamps`
+   - **Historique des messages** :
+     - Sauvegarde des 5 derniers messages dans la table `messages` (SQLite)
+     - Chargement automatique à la connexion via `getLastMessages(5)`
+     - Fonction `saveMessage(pseudo, message, timestamp)` pour la persistance
+
+3. **Client Socket.IO** (`public/javascripts/socket-client.js` + `views/pages/chat.ejs`) :
+   - Connexion automatique au serveur Socket.IO
+   - Écoute des événements : `new-message`, `user-joined`, `user-count`, `typing-users`, `chat-history`
+   - Gestion de la déconnexion : `beforeunload`, `unload`, `pagehide` pour nettoyer proprement les connexions
+   - Protection XSS : Utilisation de `createElement` et `textContent` au lieu de `innerHTML`
+
+**Fonctionnalités du chat :**
+- **Pseudo personnalisé** : Stocké dans `localStorage` pour persister entre les sessions
+- **Indicateur de frappe** : Affichage dynamique ("X est en train d'écrire", "X, Y sont en train d'écrire", "Plusieurs personnes sont en train d'écrire")
+- **Compteur d'utilisateurs** : Affichage du nombre d'utilisateurs connectés en temps réel
+- **Filtrage des mots interdits** : Voir section dédiée ci-dessous
+- **Historique** : Les 5 derniers messages sont chargés automatiquement
+
+### Filtrage des mots interdits
+
+Le système de chat intègre un filtre de contenu pour censurer les mots inappropriés.
+
+**Mise en place technique :**
+
+1. **Bibliothèque** : `badwords-list` (CommonJS compatible)
+   - Alternative à `bad-words` (qui est en ESM et incompatible avec CommonJS)
+   - Fournit une liste de mots interdits en anglais
+
+2. **Module de filtrage** (`utils/wordFilter.js`) :
+   - `filterMessage(message)` : Remplace les mots interdits par des astérisques (`*****`)
+   - `isProfane(message)` : Vérifie si un message contient des mots interdits
+   - Liste étendue avec des mots français supplémentaires
+   - Utilisation de regex pour détecter les variations (avec/sans accents, majuscules/minuscules)
+
+3. **Intégration** (`socket/socket.js`) :
+   - Les messages sont filtrés avant d'être diffusés via `wordFilter.filterMessage(message)`
+   - Les messages filtrés sont sauvegardés dans l'historique
+
+### Base de données : Better-SQLite3
+
+L'application utilise **better-sqlite3** comme driver SQLite (migration depuis Sequelize).
+
+**Mise en place technique :**
+
+1. **Configuration** (`config/database.js`) :
+   - Connexion synchrone à la base SQLite (`mds_b3dev_api_dev.db3`)
+   - **Mode WAL** (Write-Ahead Logging) : `db.pragma('journal_mode = WAL')` pour de meilleures performances
+   - **Clés étrangères activées** : `db.pragma('foreign_keys = ON')` pour l'intégrité référentielle
+   - **Préparations de requêtes** : Utilisation de `db.prepare()` pour des requêtes optimisées
+
+2. **Avantages de better-sqlite3** :
+   - **Synchrone** : Pas besoin de callbacks ou Promises (code plus simple)
+   - **Performances** : Plus rapide que `sqlite3` (driver asynchrone)
+   - **API simple** : `stmt.run()`, `stmt.get()`, `stmt.all()` pour exécuter les requêtes
+
+3. **Tables utilisées** :
+   - `users` : Utilisateurs (id, name, email, role)
+   - `courses` : Cours (id, title, price, instructor_id)
+   - `messages` : Messages du chat (id, pseudo, message, timestamp)
+
+**Note** : Sequelize est toujours présent pour validation ORM, mais `better-sqlite3` est utilisé pour toutes les opérations de base de données.
+
+### Architecture de l'API RESTful
+
+L'application expose une API RESTful complète pour interagir avec la base de données. Voir la section [API RESTful](#api-restful) pour les détails des endpoints et exemples de requêtes.
+
+**Architecture technique :**
+
+1. **Routeur API** (`routes/api/index.js`) :
+   - Montage des routes sous `/api`
+   - Routes utilisateurs : `/api/users`
+   - Routes cours : `/api/courses`
+
+2. **Endpoints utilisateurs** (`routes/api/users.js`) :
+   - `GET /api/users` : Liste tous les utilisateurs
+   - `GET /api/users/:id` : Récupère un utilisateur par ID
+   - `POST /api/users` : Crée un utilisateur
+   - `PUT /api/users/:id` : Met à jour un utilisateur
+   - `DELETE /api/users/:id` : Supprime un utilisateur
+   - **Sécurité** : Le champ `password` est exclu des réponses
+
+3. **Endpoints cours** (`routes/api/courses.js`) :
+   - `GET /api/courses` : Liste tous les cours avec leurs instructeurs (JOIN SQL)
+   - `GET /api/courses/:id` : Récupère un cours avec son instructeur
+   - `POST /api/courses` : Crée un cours
+   - `PUT /api/courses/:id` : Met à jour un cours
+   - `DELETE /api/courses/:id` : Supprime un cours
+   - **Relations** : Utilisation de JOIN SQL pour récupérer les données de l'instructeur
+
+4. **Format des réponses** :
+   - Succès : `{ "success": true, "data": {...}, "count": 1 }`
+   - Erreur : `{ "success": false, "message": "..." }`
+
+5. **CORS** : Middleware CORS activé pour permettre les requêtes cross-origin depuis le frontend
+
+### Design responsive
+
+L'application est entièrement responsive avec un design adaptatif pour mobile, tablette et desktop.
+
+**Mise en place technique :**
+
+1. **Menu hamburger** (`views/layout/header.ejs`) :
+   - Bouton hamburger visible uniquement sur mobile (`@media (max-width: 768px)`)
+   - Menu de navigation qui se transforme en colonne sur mobile
+   - JavaScript pour gérer l'ouverture/fermeture du menu
+   - Fermeture automatique au clic sur un lien
+
+2. **Breakpoints CSS** :
+   - **768px** : Tablettes (menu hamburger, layout en colonne)
+   - **480px** : Téléphones (tailles de police réduites, padding ajusté)
+
+3. **Pages adaptatives** :
+   - **Accueil** : Hero section et grille de features responsive
+   - **Contact** : Formulaire adaptatif
+   - **Cours** : Cartes en colonne unique sur mobile
+   - **Chat** : Interface adaptée aux petits écrans (header en colonne, messages plus compacts)
+
+4. **CSS Grid et Flexbox** :
+   - Utilisation de `grid-template-columns: repeat(auto-fit, minmax(...))` pour les grilles adaptatives
+   - Flexbox pour les layouts flexibles
+
+### Améliorations front-end
+
+Plusieurs améliorations visuelles ont été apportées au site :
+
+1. **Page d'accueil** (`views/pages/index.ejs`) :
+   - Hero section avec gradient bleu
+   - Boutons d'action vers les cours et le contact
+   - Section "Pourquoi nous choisir ?" avec 3 cartes de fonctionnalités
+
+2. **Page contact** (`views/pages/contact.ejs`) :
+   - Formulaire de contact stylisé (non fonctionnel, design uniquement)
+   - Champs : Nom, Email, Sujet, Message
+   - Design cohérent avec le reste du site
+
+3. **Page cours** (`views/pages/courses.ejs`) :
+   - Cartes de cours améliorées avec :
+     - Images aléatoires via **Picsum Photos API** (`https://picsum.photos/seed/{id}/400/250`)
+     - Descriptions pour chaque cours
+     - Design moderne avec ombres et transitions
+
+4. **Page 404** (`views/pages/error.ejs`) :
+   - Bouton "Retour à l'accueil" avec la même couleur que les autres boutons (`#2563eb`)
+
 ### Téléchargement de fichiers
 
 La route `/download` permet de télécharger le fichier `dl.png` avec un nom de fichier unique généré automatiquement basé sur la date et l'heure actuelle :
@@ -335,6 +566,8 @@ La route `/download` permet de télécharger le fichier `dl.png` avec un nom de 
 
 La page `/logs` affiche le contenu du fichier `log/latest-log.txt` s'il existe. Si le fichier n'existe pas, une page vide est affichée.
 
+**Fonctionnalité ajoutée** : Scroll automatique vers le bas pour afficher les logs les plus récents au chargement de la page.
+
 ### Gestion des erreurs
 
 - Page d'erreur personnalisée (`views/pages/error.ejs`)
@@ -343,19 +576,36 @@ La page `/logs` affiche le contenu du fichier `log/latest-log.txt` s'il existe. 
 
 ## 🛠️ Technologies utilisées
 
+### Backend
+
 - **Node.js** : Environnement d'exécution JavaScript côté serveur. Node.js permet d'utiliser JavaScript pour créer des serveurs web performants et asynchrones.
 - **Express.js** : Framework web minimaliste et flexible pour Node.js, facilitant la création d'applications web et d'APIs
-- **EJS** : Moteur de template pour générer des vues HTML dynamiques
-- **Socket.IO** : Bibliothèque pour la communication en temps réel via WebSocket
-- **better-sqlite3** : Driver SQLite performant et synchrone pour Node.js
-- **SQLite** : Base de données relationnelle légère stockée dans un fichier
-- **express-session** : Gestion des sessions utilisateur
-- **morgan** : Middleware de logging HTTP
-- **cookie-parser** : Parseur de cookies
-- **http-errors** : Création d'erreurs HTTP
-- **nodemon** : Rechargement automatique en développement
-- **CORS** : Support des requêtes cross-origin pour l'API
-- **badwords-list** : Liste de mots interdits pour le filtrage de contenu dans le chat
+- **Socket.IO** : Bibliothèque pour la communication en temps réel via WebSocket. Utilise le protocole WebSocket avec fallback sur HTTP long-polling pour une compatibilité maximale.
+- **better-sqlite3** : Driver SQLite performant et synchrone pour Node.js. Plus rapide que `sqlite3` (asynchrone) grâce à son API synchrone et ses optimisations.
+- **SQLite** : Base de données relationnelle légère stockée dans un fichier (`.db3`). Mode WAL activé pour de meilleures performances.
+- **express-session** : Middleware pour la gestion des sessions utilisateur (cookies, stockage en mémoire)
+- **Passport.js** : Middleware d'authentification flexible pour Node.js
+- **passport-google-oauth20** : Stratégie Passport pour l'authentification OAuth 2.0 avec Google
+- **dotenv** : Chargement des variables d'environnement depuis un fichier `.env`
+- **morgan** : Middleware de logging HTTP (format de logs des requêtes)
+- **cookie-parser** : Parseur de cookies pour Express
+- **http-errors** : Création d'erreurs HTTP standardisées
+- **CORS** : Middleware pour gérer les requêtes Cross-Origin Resource Sharing (nécessaire pour l'API)
+
+### Frontend
+
+- **EJS** : Moteur de template pour générer des vues HTML dynamiques. Permet d'inclure des layouts (`<%- include() %>`) et d'injecter des variables (`<%= variable %>`)
+- **CSS3** : Styles modernes avec Flexbox, Grid, et Media Queries pour le responsive design
+
+### Outils de développement
+
+- **nodemon** : Outil de développement pour le rechargement automatique du serveur lors des modifications de code
+- **Sequelize** : ORM (Object-Relational Mapping) pour validation et modélisation (utilisé en parallèle avec better-sqlite3)
+- **sqlite3** : Driver SQLite asynchrone (requis par Sequelize)
+
+### Sécurité et contenu
+
+- **badwords-list** : Bibliothèque CommonJS fournissant une liste de mots interdits pour le filtrage de contenu dans le chat. Alternative à `bad-words` (ESM) pour compatibilité CommonJS.
 
 ## 🚀 Déploiement
 

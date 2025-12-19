@@ -1,15 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../../config/database');
+const express = require('express');
+const router = express.Router();
+const User = require('../../models/User');
 
 /**
  * GET /api/users
  * Récupère tous les utilisateurs
  */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   try {
-    var stmt = db.prepare('SELECT id, name, email, role FROM users');
-    var users = stmt.all();
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role']
+    });
     
     res.json({
       success: true,
@@ -25,10 +26,20 @@ router.get('/', function(req, res, next) {
  * GET /api/users/:id
  * Récupère un utilisateur par son ID
  */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', async function(req, res, next) {
   try {
-    var stmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
-    var user = stmt.get(req.params.id);
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
+    
+    const user = await User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'role']
+    });
     
     if (!user) {
       return res.status(404).json({
@@ -50,9 +61,9 @@ router.get('/:id', function(req, res, next) {
  * POST /api/users
  * Crée un nouvel utilisateur
  */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
   try {
-    var { name, email, role } = req.body;
+    const { name, email, role } = req.body;
     
     // Validation basique
     if (!name) {
@@ -64,8 +75,7 @@ router.post('/', function(req, res, next) {
     
     // Vérifier si l'email existe déjà (unique)
     if (email) {
-      var checkStmt = db.prepare('SELECT id FROM users WHERE email = ?');
-      var existingUser = checkStmt.get(email);
+      const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         return res.status(409).json({
           success: false,
@@ -75,21 +85,25 @@ router.post('/', function(req, res, next) {
     }
     
     // Créer l'utilisateur
-    var insertStmt = db.prepare('INSERT INTO users (name, email, role) VALUES (?, ?, ?)');
-    var result = insertStmt.run(name, email || null, role || null);
-    
-    // Récupérer l'utilisateur créé
-    var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
-    var user = selectStmt.get(result.lastInsertRowid);
+    const user = await User.create({
+      name,
+      email: email || null,
+      role: role || null
+    });
     
     res.status(201).json({
       success: true,
       message: 'Utilisateur créé avec succès',
-      data: user
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
     // Gérer les erreurs de contrainte unique (email)
-    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+    if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(409).json({
         success: false,
         message: 'Cet email existe déjà'
@@ -103,13 +117,21 @@ router.post('/', function(req, res, next) {
  * PUT /api/users/:id
  * Met à jour un utilisateur
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', async function(req, res, next) {
   try {
-    // Vérifier que l'utilisateur existe
-    var checkStmt = db.prepare('SELECT id FROM users WHERE id = ?');
-    var existingUser = checkStmt.get(req.params.id);
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
     
-    if (!existingUser) {
+    // Vérifier que l'utilisateur existe
+    const user = await User.findByPk(id);
+    
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: 'Utilisateur non trouvé'
@@ -117,38 +139,41 @@ router.put('/:id', function(req, res, next) {
     }
     
     // Mettre à jour les champs fournis
-    var { name, email, role } = req.body;
-    var updates = [];
-    var values = [];
+    const { name, email, role } = req.body;
+    const updateData = {};
     
     if (name !== undefined) {
-      updates.push('name = ?');
-      values.push(name);
+      updateData.name = name;
     }
     if (email !== undefined) {
-      updates.push('email = ?');
-      values.push(email);
+      updateData.email = email;
     }
     if (role !== undefined) {
-      updates.push('role = ?');
-      values.push(role);
+      updateData.role = role;
     }
     
-    if (updates.length === 0) {
+    if (Object.keys(updateData).length === 0) {
       // Aucune mise à jour demandée, retourner l'utilisateur actuel
-      var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
-      var user = selectStmt.get(req.params.id);
       return res.json({
         success: true,
         message: 'Aucune modification effectuée',
-        data: user
+        data: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
       });
     }
     
     // Vérifier si l'email existe déjà (si modifié)
     if (email !== undefined) {
-      var emailCheckStmt = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?');
-      var emailExists = emailCheckStmt.get(email, req.params.id);
+      const emailExists = await User.findOne({ 
+        where: { 
+          email: email,
+          id: { [require('sequelize').Op.ne]: id }
+        }
+      });
       if (emailExists) {
         return res.status(409).json({
           success: false,
@@ -157,24 +182,25 @@ router.put('/:id', function(req, res, next) {
       }
     }
     
-    // Construire et exécuter la requête UPDATE
-    values.push(req.params.id);
-    var updateQuery = 'UPDATE users SET ' + updates.join(', ') + ' WHERE id = ?';
-    var updateStmt = db.prepare(updateQuery);
-    updateStmt.run.apply(updateStmt, values);
+    // Mettre à jour l'utilisateur
+    await user.update(updateData);
     
     // Récupérer l'utilisateur mis à jour
-    var selectStmt = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?');
-    var user = selectStmt.get(req.params.id);
+    await user.reload();
     
     res.json({
       success: true,
       message: 'Utilisateur mis à jour avec succès',
-      data: user
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
     // Gérer les erreurs de contrainte unique (email)
-    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+    if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(409).json({
         success: false,
         message: 'Cet email existe déjà'
@@ -188,11 +214,19 @@ router.put('/:id', function(req, res, next) {
  * DELETE /api/users/:id
  * Supprime un utilisateur
  */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', async function(req, res, next) {
   try {
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
+    
     // Vérifier que l'utilisateur existe
-    var checkStmt = db.prepare('SELECT id FROM users WHERE id = ?');
-    var user = checkStmt.get(req.params.id);
+    const user = await User.findByPk(id);
     
     if (!user) {
       return res.status(404).json({
@@ -202,8 +236,7 @@ router.delete('/:id', function(req, res, next) {
     }
     
     // Supprimer l'utilisateur
-    var deleteStmt = db.prepare('DELETE FROM users WHERE id = ?');
-    deleteStmt.run(req.params.id);
+    await user.destroy();
     
     res.json({
       success: true,

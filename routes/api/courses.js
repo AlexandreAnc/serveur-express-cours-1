@@ -1,55 +1,51 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../../config/database');
+const express = require('express');
+const router = express.Router();
+const Course = require('../../models/Course');
+const User = require('../../models/User');
 
 /**
  * GET /api/courses
  * Récupère tous les cours avec leurs instructeurs
  */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   try {
-    var stmt = db.prepare(`
-      SELECT 
-        c.id,
-        c.title,
-        c.price,
-        c.instructor_id,
-        u.id as instructor_id_full,
-        u.name as instructor_name,
-        u.email as instructor_email
-      FROM courses c
-      LEFT JOIN users u ON c.instructor_id = u.id
-      ORDER BY c.id
-    `);
-    var rows = stmt.all();
+    const courses = await Course.findAll({
+      include: [{
+        model: User,
+        as: 'instructor',
+        attributes: ['id', 'name', 'email'],
+        required: false
+      }],
+      order: [['id', 'ASC']]
+    });
     
     // Formater les résultats pour correspondre au format attendu par le frontend
-    var courses = rows.map(function(row) {
-      var course = {
-        id: row.id,
-        title: row.title,
-        price: row.price,
-        instructor_id: row.instructor_id
+    const formattedCourses = courses.map(function(course) {
+      const courseData = {
+        id: course.id,
+        title: course.title,
+        price: course.price,
+        instructor_id: course.instructor_id
       };
       
       // Ajouter l'instructeur si présent
-      if (row.instructor_id_full) {
-        course.instructor = {
-          id: row.instructor_id_full,
-          name: row.instructor_name,
-          email: row.instructor_email
+      if (course.instructor) {
+        courseData.instructor = {
+          id: course.instructor.id,
+          name: course.instructor.name,
+          email: course.instructor.email
         };
       } else {
-        course.instructor = null;
+        courseData.instructor = null;
       }
       
-      return course;
+      return courseData;
     });
     
     res.json({
       success: true,
-      data: courses,
-      count: courses.length
+      data: formattedCourses,
+      count: formattedCourses.length
     });
   } catch (error) {
     next(error);
@@ -60,24 +56,27 @@ router.get('/', function(req, res, next) {
  * GET /api/courses/:id
  * Récupère un cours par son ID avec son instructeur
  */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', async function(req, res, next) {
   try {
-    var stmt = db.prepare(`
-      SELECT 
-        c.id,
-        c.title,
-        c.price,
-        c.instructor_id,
-        u.id as instructor_id_full,
-        u.name as instructor_name,
-        u.email as instructor_email
-      FROM courses c
-      LEFT JOIN users u ON c.instructor_id = u.id
-      WHERE c.id = ?
-    `);
-    var row = stmt.get(req.params.id);
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
     
-    if (!row) {
+    const course = await Course.findByPk(id, {
+      include: [{
+        model: User,
+        as: 'instructor',
+        attributes: ['id', 'name', 'email'],
+        required: false
+      }]
+    });
+    
+    if (!course) {
       return res.status(404).json({
         success: false,
         message: 'Cours non trouvé'
@@ -85,27 +84,27 @@ router.get('/:id', function(req, res, next) {
     }
     
     // Formater le résultat
-    var course = {
-      id: row.id,
-      title: row.title,
-      price: row.price,
-      instructor_id: row.instructor_id
+    const courseData = {
+      id: course.id,
+      title: course.title,
+      price: course.price,
+      instructor_id: course.instructor_id
     };
     
     // Ajouter l'instructeur si présent
-    if (row.instructor_id_full) {
-      course.instructor = {
-        id: row.instructor_id_full,
-        name: row.instructor_name,
-        email: row.instructor_email
+    if (course.instructor) {
+      courseData.instructor = {
+        id: course.instructor.id,
+        name: course.instructor.name,
+        email: course.instructor.email
       };
     } else {
-      course.instructor = null;
+      courseData.instructor = null;
     }
     
     res.json({
       success: true,
-      data: course
+      data: courseData
     });
   } catch (error) {
     next(error);
@@ -116,9 +115,9 @@ router.get('/:id', function(req, res, next) {
  * POST /api/courses
  * Crée un nouveau cours
  */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
   try {
-    var { title, price, instructor_id } = req.body;
+    const { title, price, instructor_id } = req.body;
     
     // Validation basique
     if (!title) {
@@ -137,8 +136,7 @@ router.post('/', function(req, res, next) {
     
     // Vérifier que l'instructeur existe
     if (instructor_id) {
-      var instructorStmt = db.prepare('SELECT id FROM users WHERE id = ?');
-      var instructor = instructorStmt.get(instructor_id);
+      const instructor = await User.findByPk(instructor_id);
       if (!instructor) {
         return res.status(404).json({
           success: false,
@@ -148,47 +146,44 @@ router.post('/', function(req, res, next) {
     }
     
     // Créer le cours
-    var insertStmt = db.prepare('INSERT INTO courses (title, price, instructor_id) VALUES (?, ?, ?)');
-    var result = insertStmt.run(title, price, instructor_id || null);
+    const course = await Course.create({
+      title,
+      price,
+      instructor_id: instructor_id || null
+    });
     
     // Récupérer le cours créé avec l'instructeur
-    var selectStmt = db.prepare(`
-      SELECT 
-        c.id,
-        c.title,
-        c.price,
-        c.instructor_id,
-        u.id as instructor_id_full,
-        u.name as instructor_name,
-        u.email as instructor_email
-      FROM courses c
-      LEFT JOIN users u ON c.instructor_id = u.id
-      WHERE c.id = ?
-    `);
-    var row = selectStmt.get(result.lastInsertRowid);
+    await course.reload({
+      include: [{
+        model: User,
+        as: 'instructor',
+        attributes: ['id', 'name', 'email'],
+        required: false
+      }]
+    });
     
     // Formater le résultat
-    var course = {
-      id: row.id,
-      title: row.title,
-      price: row.price,
-      instructor_id: row.instructor_id
+    const courseData = {
+      id: course.id,
+      title: course.title,
+      price: course.price,
+      instructor_id: course.instructor_id
     };
     
-    if (row.instructor_id_full) {
-      course.instructor = {
-        id: row.instructor_id_full,
-        name: row.instructor_name,
-        email: row.instructor_email
+    if (course.instructor) {
+      courseData.instructor = {
+        id: course.instructor.id,
+        name: course.instructor.name,
+        email: course.instructor.email
       };
     } else {
-      course.instructor = null;
+      courseData.instructor = null;
     }
     
     res.status(201).json({
       success: true,
       message: 'Cours créé avec succès',
-      data: course
+      data: courseData
     });
   } catch (error) {
     next(error);
@@ -199,13 +194,21 @@ router.post('/', function(req, res, next) {
  * PUT /api/courses/:id
  * Met à jour un cours
  */
-router.put('/:id', function(req, res, next) {
+router.put('/:id', async function(req, res, next) {
   try {
-    // Vérifier que le cours existe
-    var checkStmt = db.prepare('SELECT id FROM courses WHERE id = ?');
-    var existingCourse = checkStmt.get(req.params.id);
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
     
-    if (!existingCourse) {
+    // Vérifier que le cours existe
+    const course = await Course.findByPk(id);
+    
+    if (!course) {
       return res.status(404).json({
         success: false,
         message: 'Cours non trouvé'
@@ -213,23 +216,19 @@ router.put('/:id', function(req, res, next) {
     }
     
     // Mettre à jour les champs fournis
-    var { title, price, instructor_id } = req.body;
-    var updates = [];
-    var values = [];
+    const { title, price, instructor_id } = req.body;
+    const updateData = {};
     
     if (title !== undefined) {
-      updates.push('title = ?');
-      values.push(title);
+      updateData.title = title;
     }
     if (price !== undefined) {
-      updates.push('price = ?');
-      values.push(price);
+      updateData.price = price;
     }
     if (instructor_id !== undefined) {
       // Vérifier que l'instructeur existe
       if (instructor_id) {
-        var instructorStmt = db.prepare('SELECT id FROM users WHERE id = ?');
-        var instructor = instructorStmt.get(instructor_id);
+        const instructor = await User.findByPk(instructor_id);
         if (!instructor) {
           return res.status(404).json({
             success: false,
@@ -237,94 +236,78 @@ router.put('/:id', function(req, res, next) {
           });
         }
       }
-      updates.push('instructor_id = ?');
-      values.push(instructor_id);
+      updateData.instructor_id = instructor_id;
     }
     
-    if (updates.length === 0) {
+    if (Object.keys(updateData).length === 0) {
       // Aucune mise à jour demandée, retourner le cours actuel avec l'instructeur
-      var selectStmt = db.prepare(`
-        SELECT 
-          c.id,
-          c.title,
-          c.price,
-          c.instructor_id,
-          u.id as instructor_id_full,
-          u.name as instructor_name,
-          u.email as instructor_email
-        FROM courses c
-        LEFT JOIN users u ON c.instructor_id = u.id
-        WHERE c.id = ?
-      `);
-      var row = selectStmt.get(req.params.id);
+      await course.reload({
+        include: [{
+          model: User,
+          as: 'instructor',
+          attributes: ['id', 'name', 'email'],
+          required: false
+        }]
+      });
       
-      var course = {
-        id: row.id,
-        title: row.title,
-        price: row.price,
-        instructor_id: row.instructor_id
+      const courseData = {
+        id: course.id,
+        title: course.title,
+        price: course.price,
+        instructor_id: course.instructor_id
       };
       
-      if (row.instructor_id_full) {
-        course.instructor = {
-          id: row.instructor_id_full,
-          name: row.instructor_name,
-          email: row.instructor_email
+      if (course.instructor) {
+        courseData.instructor = {
+          id: course.instructor.id,
+          name: course.instructor.name,
+          email: course.instructor.email
         };
       } else {
-        course.instructor = null;
+        courseData.instructor = null;
       }
       
       return res.json({
         success: true,
         message: 'Aucune modification effectuée',
-        data: course
+        data: courseData
       });
     }
     
-    // Construire et exécuter la requête UPDATE
-    values.push(req.params.id);
-    var updateQuery = 'UPDATE courses SET ' + updates.join(', ') + ' WHERE id = ?';
-    var updateStmt = db.prepare(updateQuery);
-    updateStmt.run.apply(updateStmt, values);
+    // Mettre à jour le cours
+    await course.update(updateData);
     
     // Récupérer le cours mis à jour avec l'instructeur
-    var selectStmt = db.prepare(`
-      SELECT 
-        c.id,
-        c.title,
-        c.price,
-        c.instructor_id,
-        u.id as instructor_id_full,
-        u.name as instructor_name,
-        u.email as instructor_email
-      FROM courses c
-      LEFT JOIN users u ON c.instructor_id = u.id
-      WHERE c.id = ?
-    `);
-    var row = selectStmt.get(req.params.id);
+    await course.reload({
+      include: [{
+        model: User,
+        as: 'instructor',
+        attributes: ['id', 'name', 'email'],
+        required: false
+      }]
+    });
     
-    var course = {
-      id: row.id,
-      title: row.title,
-      price: row.price,
-      instructor_id: row.instructor_id
+    const courseData = {
+      id: course.id,
+      title: course.title,
+      price: course.price,
+      instructor_id: course.instructor_id
     };
     
-    if (row.instructor_id_full) {
-      course.instructor = {
-        id: row.instructor_id_full,
-        name: row.instructor_name,
-        email: row.instructor_email
+    if (course.instructor) {
+      courseData.instructor = {
+        id: course.instructor.id,
+        name: course.instructor.name,
+        email: course.instructor.email
       };
     } else {
-      course.instructor = null;
+      courseData.instructor = null;
     }
     
     res.json({
       success: true,
       message: 'Cours mis à jour avec succès',
-      data: course
+      data: courseData
     });
   } catch (error) {
     next(error);
@@ -335,11 +318,19 @@ router.put('/:id', function(req, res, next) {
  * DELETE /api/courses/:id
  * Supprime un cours
  */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', async function(req, res, next) {
   try {
+    // Valider que l'ID est un nombre
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID invalide'
+      });
+    }
+    
     // Vérifier que le cours existe
-    var checkStmt = db.prepare('SELECT id FROM courses WHERE id = ?');
-    var course = checkStmt.get(req.params.id);
+    const course = await Course.findByPk(id);
     
     if (!course) {
       return res.status(404).json({
@@ -349,8 +340,7 @@ router.delete('/:id', function(req, res, next) {
     }
     
     // Supprimer le cours
-    var deleteStmt = db.prepare('DELETE FROM courses WHERE id = ?');
-    deleteStmt.run(req.params.id);
+    await course.destroy();
     
     res.json({
       success: true,

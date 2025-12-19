@@ -3,18 +3,154 @@
 
 <head>
 <%- include('../layout/head', { title: title }) %>
+<style>
+    .contact-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .contact-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .contact-header h1 {
+        font-size: 2.5rem;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .contact-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+
+    .contact-form {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.2s;
+        background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-submit {
+        width: 100%;
+        padding: 14px 24px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .form-submit:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .form-submit:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+        .contact-container {
+            padding: 0 15px;
+        }
+
+        .contact-form {
+            padding: 30px 20px;
+        }
+
+        .contact-header h1 {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .contact-header p {
+            font-size: 1rem;
+        }
+    }
+</style>
 </head>
 
 <body>
     <%- include('../layout/header') %>
 
     <main class="container">
-        <div style="text-align: center;">
-            <% if (isAuthenticated && user) { %>
-                <h2>Bienvenue <%= user.login %></h2>
-            <% } %>
-            <h2>Contact</h2>
-            <p>Page de contact cool</p>
+        <div class="contact-container">
+            <div class="contact-header">
+                <h1>Contactez-nous</h1>
+                <p>Une question ? Une suggestion ? N'hésitez pas à nous écrire !</p>
+            </div>
+
+            <form class="contact-form" onsubmit="event.preventDefault(); alert('Formulaire non fonctionnel - Ceci est une démo');">
+                <div class="form-group">
+                    <label for="name">Nom complet *</label>
+                    <input type="text" id="name" name="name" required placeholder="Votre nom">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="votre.email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Sujet *</label>
+                    <input type="text" id="subject" name="subject" required placeholder="Objet de votre message">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" required placeholder="Votre message..."></textarea>
+                </div>
+
+                <button type="submit" class="form-submit">Envoyer le message</button>
+            </form>
         </div>
     </main>
 

@@ -102,8 +102,7 @@ serveur-express/
 ├── bin/
 │   └── www                 # Point d'entrée du serveur (initialise Socket.IO)
 ├── config/
-│   ├── sequelize.js        # Configuration Sequelize ORM (connexion SQLite)
-│   └── database.js         # Configuration better-sqlite3 (déprécié)
+│   └── sequelize.js        # Configuration Sequelize ORM (connexion SQLite)
 ├── models/                 # Modèles Sequelize
 │   ├── User.js            # Modèle User
 │   ├── Course.js          # Modèle Course

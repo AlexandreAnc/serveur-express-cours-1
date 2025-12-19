@@ -1924,3 +1924,5 @@
 [2025-12-19 11:08:45] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: JIJTeszrMF4mt532AAAB
 [2025-12-19 11:08:52] Nouvel utilisateur connecté - IP: ::1 - Socket ID: RlGd7LVZEE0viMutAAAB
 [2025-12-19 11:08:52] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: RlGd7LVZEE0viMutAAAB
+[2025-12-19 11:10:05] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Y4FEAhl1SCyrXqhUAAAB
+[2025-12-19 11:10:06] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: Y4FEAhl1SCyrXqhUAAAB

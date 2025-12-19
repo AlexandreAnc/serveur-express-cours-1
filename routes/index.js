@@ -40,6 +40,84 @@ router.get('/contact', function(req, res, next) {
   });
 });
 
+/* POST contact form - Envoie les données au webhook Discord */
+router.post('/contact', async function(req, res, next) {
+  try {
+    const { name, email, subject, message } = req.body;
+    
+    // Validation basique
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tous les champs sont requis'
+      });
+    }
+    
+    // URL du webhook Discord
+    const webhookUrl = 'https://discord.com/api/webhooks/1451544073088405576/J5_YPCsoDn2rCikXZHR1XE0DUajr6OeDoCCR6QU-32ZKhWx_73rRSl3-F23vy_YYQGJB';
+    
+    // Créer l'embed Discord
+    const embed = {
+      title: '📧 Nouveau message de contact',
+      color: 0x2563eb, // Couleur bleue
+      fields: [
+        {
+          name: '👤 Nom',
+          value: name,
+          inline: true
+        },
+        {
+          name: '📧 Email',
+          value: email,
+          inline: true
+        },
+        {
+          name: '📌 Sujet',
+          value: subject,
+          inline: false
+        },
+        {
+          name: '💬 Message',
+          value: message.length > 1024 ? message.substring(0, 1021) + '...' : message,
+          inline: false
+        }
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: 'Formulaire de contact - TP Express'
+      }
+    };
+    
+    // Envoyer au webhook Discord
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        embeds: [embed]
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Erreur Discord: ${response.status}`);
+    }
+    
+    // Succès
+    res.json({
+      success: true,
+      message: 'Votre message a été envoyé avec succès !'
+    });
+    
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi du formulaire:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de l\'envoi du message. Veuillez réessayer plus tard.'
+    });
+  }
+});
+
 /* GET chat page. */
 router.get('/chat', function(req, res, next) {
   res.render('pages/chat', { 

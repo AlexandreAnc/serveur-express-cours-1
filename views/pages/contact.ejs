@@ -128,7 +128,9 @@
                 <p>Une question ? Une suggestion ? N'hésitez pas à nous écrire !</p>
             </div>
 
-            <form class="contact-form" onsubmit="event.preventDefault(); alert('Formulaire non fonctionnel - Ceci est une démo');">
+            <form class="contact-form" id="contact-form">
+                <div id="form-message" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;"></div>
+                
                 <div class="form-group">
                     <label for="name">Nom complet *</label>
                     <input type="text" id="name" name="name" required placeholder="Votre nom">
@@ -149,8 +151,65 @@
                     <textarea id="message" name="message" required placeholder="Votre message..."></textarea>
                 </div>
 
-                <button type="submit" class="form-submit">Envoyer le message</button>
+                <button type="submit" class="form-submit" id="submit-btn">Envoyer le message</button>
             </form>
+            
+            <script>
+                document.getElementById('contact-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const form = e.target;
+                    const submitBtn = document.getElementById('submit-btn');
+                    const messageDiv = document.getElementById('form-message');
+                    
+                    // Désactiver le bouton pendant l'envoi
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Envoi en cours...';
+                    messageDiv.style.display = 'none';
+                    
+                    // Récupérer les données du formulaire
+                    const formData = new FormData(form);
+                    const data = {
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        subject: formData.get('subject'),
+                        message: formData.get('message')
+                    };
+                    
+                    try {
+                        const response = await fetch('/contact', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            messageDiv.style.display = 'block';
+                            messageDiv.style.background = '#d1fae5';
+                            messageDiv.style.color = '#065f46';
+                            messageDiv.textContent = '✓ ' + result.message;
+                            form.reset();
+                        } else {
+                            messageDiv.style.display = 'block';
+                            messageDiv.style.background = '#fee2e2';
+                            messageDiv.style.color = '#991b1b';
+                            messageDiv.textContent = '✗ ' + result.message;
+                        }
+                    } catch (error) {
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.background = '#fee2e2';
+                        messageDiv.style.color = '#991b1b';
+                        messageDiv.textContent = '✗ Erreur lors de l\'envoi. Veuillez réessayer.';
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Envoyer le message';
+                    }
+                });
+            </script>
         </div>
     </main>
 

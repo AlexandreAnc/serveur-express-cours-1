@@ -171,8 +171,8 @@ router.get('/logout', function(req, res, next) {
     req.session.destroy(function(err) {
       if (err) {
         console.error('Erreur lors de la destruction de la session:', err);
-      }
-      res.redirect('/');
+    }
+    res.redirect('/');
     });
   });
 });

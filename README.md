@@ -16,7 +16,7 @@ Application web développée avec Express.js et EJS, incluant un système d'auth
   - [Authentification OAuth avec Google](#authentification-oauth-avec-google)
   - [Chat en temps réel avec Socket.IO](#chat-en-temps-réel-avec-socketio)
   - [Filtrage des mots interdits](#filtrage-des-mots-interdits)
-  - [Base de données : Better-SQLite3](#base-de-données-better-sqlite3)
+  - [Base de données : Sequelize ORM](#base-de-données-sequelize-orm)
   - [Architecture de l'API RESTful](#architecture-de-lapi-restful)
   - [Design responsive](#design-responsive)
   - [Améliorations front-end](#améliorations-front-end)
@@ -102,7 +102,12 @@ serveur-express/
 ├── bin/
 │   └── www                 # Point d'entrée du serveur (initialise Socket.IO)
 ├── config/
-│   └── database.js         # Configuration better-sqlite3 (connexion SQLite)
+│   ├── sequelize.js        # Configuration Sequelize ORM (connexion SQLite)
+│   └── database.js         # Configuration better-sqlite3 (déprécié)
+├── models/                 # Modèles Sequelize
+│   ├── User.js            # Modèle User
+│   ├── Course.js          # Modèle Course
+│   └── Message.js         # Modèle Message
 ├── routes/                  # Routes de l'application
 │   ├── index.js           # Routes principales (pages web)
 │   ├── users.js           # Routes utilisateurs
@@ -412,9 +417,9 @@ L'application intègre un système de chat en temps réel utilisant **Socket.IO*
      - Maximum 5 messages par fenêtre de 10 secondes
      - Stockage des timestamps dans `socket.messageTimestamps`
    - **Historique des messages** :
-     - Sauvegarde des 5 derniers messages dans la table `messages` (SQLite)
-     - Chargement automatique à la connexion via `getLastMessages(5)`
-     - Fonction `saveMessage(pseudo, message, timestamp)` pour la persistance
+     - Sauvegarde des 5 derniers messages dans la table `messages` via Sequelize
+     - Chargement automatique à la connexion via `Message.findAll()` avec limite
+     - Fonction `saveMessage(pseudo, message, timestamp)` utilisant `Message.create()` pour la persistance
 
 3. **Client Socket.IO** (`public/javascripts/socket-client.js` + `views/pages/chat.ejs`) :
    - Connexion automatique au serveur Socket.IO
@@ -435,8 +440,7 @@ Le système de chat intègre un filtre de contenu pour censurer les mots inappro
 
 **Mise en place technique :**
 
-1. **Bibliothèque** : `badwords-list` (CommonJS compatible)
-   - Alternative à `bad-words` (qui est en ESM et incompatible avec CommonJS)
+1. **Bibliothèque** : `badwords-list`
    - Fournit une liste de mots interdits en anglais
 
 2. **Module de filtrage** (`utils/wordFilter.js`) :
@@ -449,29 +453,38 @@ Le système de chat intègre un filtre de contenu pour censurer les mots inappro
    - Les messages sont filtrés avant d'être diffusés via `wordFilter.filterMessage(message)`
    - Les messages filtrés sont sauvegardés dans l'historique
 
-### Base de données : Better-SQLite3
+### Base de données : Sequelize ORM
 
-L'application utilise **better-sqlite3** comme driver SQLite (migration depuis Sequelize).
+L'application utilise **Sequelize** comme ORM (Object-Relational Mapping) pour interagir avec la base de données SQLite.
 
 **Mise en place technique :**
 
-1. **Configuration** (`config/database.js`) :
-   - Connexion synchrone à la base SQLite (`mds_b3dev_api_dev.db3`)
-   - **Mode WAL** (Write-Ahead Logging) : `db.pragma('journal_mode = WAL')` pour de meilleures performances
-   - **Clés étrangères activées** : `db.pragma('foreign_keys = ON')` pour l'intégrité référentielle
-   - **Préparations de requêtes** : Utilisation de `db.prepare()` pour des requêtes optimisées
+1. **Configuration** (`config/sequelize.js`) :
+   - Connexion à la base SQLite (`mds_b3dev_api_dev.db3`)
+   - **Timestamps désactivés** : `timestamps: false` (la base existante n'utilise pas de timestamps automatiques)
+   - **Noms de tables figés** : `freezeTableName: true` pour utiliser les noms de tables existants
 
-2. **Avantages de better-sqlite3** :
-   - **Synchrone** : Pas besoin de callbacks ou Promises (code plus simple)
-   - **Performances** : Plus rapide que `sqlite3` (driver asynchrone)
-   - **API simple** : `stmt.run()`, `stmt.get()`, `stmt.all()` pour exécuter les requêtes
+2. **Modèles Sequelize** (`models/`) :
+   - **User** (`models/User.js`) : Modèle pour la table `users` (id, name, email, role)
+   - **Course** (`models/Course.js`) : Modèle pour la table `courses` (id, title, price, instructor_id)
+   - **Message** (`models/Message.js`) : Modèle pour la table `messages` (id, pseudo, message, timestamp)
 
-3. **Tables utilisées** :
+3. **Relations** :
+   - `Course.belongsTo(User)` : Un cours appartient à un instructeur (User)
+   - `User.hasMany(Course)` : Un utilisateur peut avoir plusieurs cours
+   - Relations définies avec `foreignKey: 'instructor_id'` et `as: 'instructor'`
+
+4. **Avantages de Sequelize** :
+   - **Abstraction SQL** : Pas besoin d'écrire du SQL brut
+   - **Protection injection SQL** : Requêtes préparées automatiquement
+   - **Relations automatiques** : Gestion des JOINs via `include`
+   - **Validation** : Validation des données avant insertion
+   - **Async/Await** : Support natif des Promises
+
+5. **Tables utilisées** :
    - `users` : Utilisateurs (id, name, email, role)
    - `courses` : Cours (id, title, price, instructor_id)
    - `messages` : Messages du chat (id, pseudo, message, timestamp)
-
-**Note** : Sequelize est toujours présent pour validation ORM, mais `better-sqlite3` est utilisé pour toutes les opérations de base de données.
 
 ### Architecture de l'API RESTful
 
@@ -493,12 +506,12 @@ L'application expose une API RESTful complète pour interagir avec la base de do
    - **Sécurité** : Le champ `password` est exclu des réponses
 
 3. **Endpoints cours** (`routes/api/courses.js`) :
-   - `GET /api/courses` : Liste tous les cours avec leurs instructeurs (JOIN SQL)
+   - `GET /api/courses` : Liste tous les cours avec leurs instructeurs (via Sequelize `include`)
    - `GET /api/courses/:id` : Récupère un cours avec son instructeur
    - `POST /api/courses` : Crée un cours
    - `PUT /api/courses/:id` : Met à jour un cours
    - `DELETE /api/courses/:id` : Supprime un cours
-   - **Relations** : Utilisation de JOIN SQL pour récupérer les données de l'instructeur
+   - **Relations** : Utilisation de Sequelize `include` pour récupérer les données de l'instructeur
 
 4. **Format des réponses** :
    - Succès : `{ "success": true, "data": {...}, "count": 1 }`
@@ -578,11 +591,12 @@ La page `/logs` affiche le contenu du fichier `log/latest-log.txt` s'il existe. 
 
 ### Backend
 
-- **Node.js** : Environnement d'exécution JavaScript côté serveur. Node.js permet d'utiliser JavaScript pour créer des serveurs web performants et asynchrones.
+- **Node.js** : Environnement d'exécution JavaScript côté serveur. Node.js n'est pas un serveur web en soi, mais un runtime qui permet d'exécuter du JavaScript en dehors du navigateur. Il utilise le moteur V8 de Chrome et permet de créer des applications serveur performantes grâce à son modèle asynchrone basé sur les événements.
 - **Express.js** : Framework web minimaliste et flexible pour Node.js, facilitant la création d'applications web et d'APIs
 - **Socket.IO** : Bibliothèque pour la communication en temps réel via WebSocket. Utilise le protocole WebSocket avec fallback sur HTTP long-polling pour une compatibilité maximale.
-- **better-sqlite3** : Driver SQLite performant et synchrone pour Node.js. Plus rapide que `sqlite3` (asynchrone) grâce à son API synchrone et ses optimisations.
-- **SQLite** : Base de données relationnelle légère stockée dans un fichier (`.db3`). Mode WAL activé pour de meilleures performances.
+- **Sequelize** : ORM (Object-Relational Mapping) pour Node.js. Permet d'interagir avec la base de données SQLite via des modèles JavaScript plutôt que du SQL brut. Gère automatiquement les relations, les validations et la protection contre les injections SQL.
+- **sqlite3** : Driver SQLite asynchrone pour Node.js (requis par Sequelize)
+- **SQLite** : Base de données relationnelle légère stockée dans un fichier (`.db3`)
 - **express-session** : Middleware pour la gestion des sessions utilisateur (cookies, stockage en mémoire)
 - **Passport.js** : Middleware d'authentification flexible pour Node.js
 - **passport-google-oauth20** : Stratégie Passport pour l'authentification OAuth 2.0 avec Google
@@ -600,29 +614,44 @@ La page `/logs` affiche le contenu du fichier `log/latest-log.txt` s'il existe. 
 ### Outils de développement
 
 - **nodemon** : Outil de développement pour le rechargement automatique du serveur lors des modifications de code
-- **Sequelize** : ORM (Object-Relational Mapping) pour validation et modélisation (utilisé en parallèle avec better-sqlite3)
-- **sqlite3** : Driver SQLite asynchrone (requis par Sequelize)
 
 ### Sécurité et contenu
 
-- **badwords-list** : Bibliothèque CommonJS fournissant une liste de mots interdits pour le filtrage de contenu dans le chat. Alternative à `bad-words` (ESM) pour compatibilité CommonJS.
+- **badwords-list** : Bibliothèque fournissant une liste de mots interdits pour le filtrage de contenu dans le chat
 
 ## 🚀 Déploiement
 
 ### Architecture de déploiement
 
 Ce projet est déployé en production avec la stack suivante :
-- **Node.js** : Serveur web qui exécute l'application Express.js
+- **Node.js** : Environnement d'exécution JavaScript qui exécute l'application Express.js
+- **Express.js** : Framework web qui crée un serveur HTTP et gère les routes
+- **NGINX** : Serveur web et reverse proxy qui fait le lien entre Internet et l'application Node.js
 - **PM2** : Process Manager pour gérer le processus Node.js en production
 - **GitHub Actions** : Automatisation du déploiement via CI/CD
 - **VPS** : Serveur distant où l'application est hébergée
 
-### Node.js comme serveur web
+### Node.js : Environnement d'exécution JavaScript
 
-Node.js n'est pas un serveur web en soi, mais un environnement d'exécution JavaScript qui permet de créer des serveurs web. Dans ce projet :
-- Express.js crée un serveur HTTP qui écoute sur un port (8080 par défaut)
-- Le serveur gère les requêtes HTTP (GET, POST, PUT, DELETE)
-- Node.js gère les opérations asynchrones et les connexions simultanées efficacement
+**Node.js n'est pas un serveur web**, mais un environnement d'exécution JavaScript (runtime) qui permet d'exécuter du JavaScript côté serveur. Dans ce projet :
+- **Node.js** exécute le code JavaScript de l'application
+- **Express.js** crée un serveur HTTP qui écoute sur un port (8080 par défaut en interne)
+- Le serveur Express gère les requêtes HTTP (GET, POST, PUT, DELETE)
+- Node.js gère les opérations asynchrones et les connexions simultanées efficacement grâce à son modèle événementiel
+
+### NGINX : Reverse Proxy
+
+**NGINX** est utilisé comme reverse proxy et serveur web en production :
+- **Reverse Proxy** : NGINX reçoit les requêtes HTTP/HTTPS depuis Internet (port 80/443) et les redirige vers l'application Node.js qui tourne en interne (port 8080)
+- **SSL/TLS** : NGINX gère les certificats HTTPS (SSL/TLS) pour sécuriser les connexions
+- **Load Balancing** : Peut répartir la charge entre plusieurs instances de l'application
+- **Static Files** : Peut servir directement les fichiers statiques (CSS, JS, images) sans passer par Node.js
+- **WebSocket Support** : Configuration spéciale pour proxy les connexions Socket.IO (HTTP long-polling dans ce projet)
+
+**Architecture réseau :**
+```
+Internet → NGINX (port 80/443) → Node.js/Express (port 8080)
+```
 
 ### Process Manager : PM2
 

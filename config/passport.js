@@ -24,7 +24,7 @@ if (googleClientSecret) {
 
 console.log('✓ GOOGLE_CALLBACK_URL:', googleCallbackUrl);
 
-if (!googleClientId || !googleClientSecret || googleClientId === 'VOTRE_CLIENT_ID' || googleClientSecret === 'VOTRE_CLIENT_SECRET') {
+if (!googleClientId || !googleClientSecret || googleClientId === 'CLIENT_ID' || googleClientSecret === 'CLIENT_SECRET') {
   console.error('✗ ERREUR: Les credentials Google OAuth ne sont pas configurés !');
   console.error('   Définissez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET dans vos variables d\'environnement.');
   console.error('   L\'authentification Google ne fonctionnera pas sans ces credentials.');
@@ -32,8 +32,8 @@ if (!googleClientId || !googleClientSecret || googleClientId === 'VOTRE_CLIENT_I
 
 // Configuration Passport pour Google OAuth
 passport.use(new GoogleStrategy({
-    clientID: googleClientId || 'VOTRE_CLIENT_ID',
-    clientSecret: googleClientSecret || 'VOTRE_CLIENT_SECRET',
+    clientID: googleClientId || 'CLIENT_ID',
+    clientSecret: googleClientSecret || 'CLIENT_SECRET',
     callbackURL: googleCallbackUrl
   },
   async function(accessToken, refreshToken, profile, done) {

@@ -1741,3 +1741,80 @@
 [2025-12-19 07:41:54] Utilisateur déconnecté - IP: ::1 - Socket ID: oCFx_0F9m_BvMotjAAAd - Raison: transport error
 [2025-12-19 07:42:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: O77owyf81chHDX_9AAAh
 [2025-12-19 07:42:11] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bXFzHQMuwzp3AnqoAAAj
+[2025-12-19 07:44:32] Nouvel utilisateur connecté - IP: ::1 - Socket ID: haAhxiZawZUXSnrsAAAl
+[2025-12-19 07:45:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: VSdR-ykmx3jA7oNzAAAn
+[2025-12-19 07:45:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: jCfneQTG0q-Bz2NTAAAp
+[2025-12-19 07:45:02] Utilisateur déconnecté - IP: ::1 - Socket ID: VSdR-ykmx3jA7oNzAAAn - Raison: transport error
+[2025-12-19 07:45:03] Utilisateur déconnecté - IP: ::1 - Socket ID: jCfneQTG0q-Bz2NTAAAp - Raison: transport error
+[2025-12-19 07:45:03] Nouvel utilisateur connecté - IP: ::1 - Socket ID: lsQy24EonNO3B2JNAAAr
+[2025-12-19 07:45:04] Utilisateur déconnecté - IP: ::1 - Socket ID: lsQy24EonNO3B2JNAAAr - Raison: transport error
+[2025-12-19 07:45:04] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9f8nAUNj-DylYgglAAAt
+[2025-12-19 07:45:09] Utilisateur déconnecté - IP: ::1 - Socket ID: 9f8nAUNj-DylYgglAAAt - Raison: transport error
+[2025-12-19 07:45:09] Nouvel utilisateur connecté - IP: ::1 - Socket ID: aZJVa1pWHVDkMGS7AAAv
+[2025-12-19 07:45:11] Nouvel utilisateur connecté - IP: ::1 - Socket ID: X18ouj1H8fihXcqyAAAx
+[2025-12-19 07:45:40] Utilisateur déconnecté - IP: ::1 - Socket ID: O77owyf81chHDX_9AAAh - Raison: ping timeout
+[2025-12-19 07:45:47] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 5GL5fw-K6EzoBiyRAAAz
+[2025-12-19 07:46:08] Nouvel utilisateur connecté - IP: ::1 - Socket ID: bT3_Slt04cuClGY7AAA1
+[2025-12-19 07:46:15] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 8_2aZhaE_AYaxz-mAAA3
+[2025-12-19 07:46:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: mJzHf5LlvSEoUyp6AAA5
+[2025-12-19 07:46:22] Utilisateur déconnecté - IP: ::1 - Socket ID: haAhxiZawZUXSnrsAAAl - Raison: ping timeout
+[2025-12-19 07:46:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Utee7qwx5Mgb_BHRAAA7
+[2025-12-19 07:46:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: mHpoIn3IxrGh5TQ0AAA-
+[2025-12-19 07:46:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: m1TV_wnCKrHb9dB7AAA_
+[2025-12-19 07:46:31] Utilisateur déconnecté - IP: ::1 - Socket ID: bT3_Slt04cuClGY7AAA1 - Raison: transport error
+[2025-12-19 07:46:31] Utilisateur rejoint le chat - Pseudo: oooo - Socket ID: m1TV_wnCKrHb9dB7AAA_
+[2025-12-19 07:46:34] Utilisateur déconnecté - IP: ::1 - Socket ID: aZJVa1pWHVDkMGS7AAAv - Raison: ping timeout
+[2025-12-19 07:46:47] Utilisateur déconnecté - IP: ::1 - Socket ID: m1TV_wnCKrHb9dB7AAA_ - Raison: client namespace disconnect
+[2025-12-19 07:46:47] Utilisateur déconnecté - IP: ::1 - Socket ID: mHpoIn3IxrGh5TQ0AAA- - Raison: transport error
+[2025-12-19 07:46:47] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 2mghqgG7TmoptD-vAABB
+[2025-12-19 07:47:01] Utilisateur déconnecté - IP: ::1 - Socket ID: X18ouj1H8fihXcqyAAAx - Raison: ping timeout
+[2025-12-19 07:47:12] Utilisateur déconnecté - IP: ::1 - Socket ID: 5GL5fw-K6EzoBiyRAAAz - Raison: ping timeout
+[2025-12-19 07:47:40] Utilisateur déconnecté - IP: ::1 - Socket ID: 8_2aZhaE_AYaxz-mAAA3 - Raison: ping timeout
+[2025-12-19 07:47:42] Utilisateur déconnecté - IP: ::1 - Socket ID: mJzHf5LlvSEoUyp6AAA5 - Raison: ping timeout
+[2025-12-19 07:47:51] Utilisateur déconnecté - IP: ::1 - Socket ID: Utee7qwx5Mgb_BHRAAA7 - Raison: ping timeout
+[2025-12-19 07:48:16] Nouvel utilisateur connecté - IP: ::1 - Socket ID: sjKUIaK1Yri51EXDAAAB
+[2025-12-19 07:48:23] Utilisateur déconnecté - IP: ::1 - Socket ID: sjKUIaK1Yri51EXDAAAB - Raison: transport error
+[2025-12-19 07:48:23] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9XN8xjUlcAH2UI5rAAAD
+[2025-12-19 07:48:33] Nouvel utilisateur connecté - IP: ::1 - Socket ID: yZNqqNMgKOgeupx9AAAB
+[2025-12-19 07:48:36] Nouvel utilisateur connecté - IP: ::1 - Socket ID: wigvmyPfbsQEewWCAAAB
+[2025-12-19 07:55:06] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 2RKJFn3TGD8rSOgRAAAD
+[2025-12-19 07:55:52] Utilisateur déconnecté - IP: ::1 - Socket ID: wigvmyPfbsQEewWCAAAB - Raison: ping timeout
+[2025-12-19 07:59:05] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 1P-f1M9qnE3xg3N4AAAB
+[2025-12-19 08:08:39] Nouvel utilisateur connecté - IP: ::1 - Socket ID: cOn-AncgfUpm0Mp5AAAB
+[2025-12-19 08:09:15] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 4ddfNXA_Nv7JiuO4AAAB
+[2025-12-19 08:09:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 3cwY_-VBd4Ts29tXAAAB
+[2025-12-19 08:13:07] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 1EaVc6AMd8PDTFAaAAAB
+[2025-12-19 08:13:33] Nouvel utilisateur connecté - IP: ::1 - Socket ID: YkHvrDiNU2SPFo8GAAAB
+[2025-12-19 08:15:55] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 8KBG-wQbj3aE9wzYAAAB
+[2025-12-19 08:16:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: uGFwBmyymzvrCC0BAAAB
+[2025-12-19 08:16:25] Nouvel utilisateur connecté - IP: ::1 - Socket ID: kvElFvF_g_GQ3O20AAAB
+[2025-12-19 08:16:29] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ccp3jYpWTrjJ1MDFAAAB
+[2025-12-19 08:17:08] Nouvel utilisateur connecté - IP: ::1 - Socket ID: qWzzMTtMlc1zQac7AAAB
+[2025-12-19 08:17:10] Nouvel utilisateur connecté - IP: ::1 - Socket ID: dqRouWWXYSZpjlH1AAAB
+[2025-12-19 08:17:12] Nouvel utilisateur connecté - IP: ::1 - Socket ID: wyMJemSd8HGJ6WOEAAAB
+[2025-12-19 08:19:32] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ys1ryNdI1ZjkXbM7AAAB
+[2025-12-19 08:39:59] Nouvel utilisateur connecté - IP: ::1 - Socket ID: fhhsHifc6Fsve6dLAAAB
+[2025-12-19 08:40:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: T9HwrHavm0eONlkFAAAB
+[2025-12-19 08:40:08] Nouvel utilisateur connecté - IP: ::1 - Socket ID: a877GnAQvmVcSEyAAAAB
+[2025-12-19 08:40:53] Nouvel utilisateur connecté - IP: ::1 - Socket ID: GCGng_ZZUyoYrp5vAAAB
+[2025-12-19 08:40:55] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 9Qv1XpMoyWP_hRUlAAAB
+[2025-12-19 08:41:00] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ueKDY49TQs_cuI5lAAAB
+[2025-12-19 08:41:02] Nouvel utilisateur connecté - IP: ::1 - Socket ID: ZID3bejgH6H5lgNiAAAB
+[2025-12-19 08:43:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: BTYF9-1tW3kC6k_xAAAB
+[2025-12-19 08:43:37] Nouvel utilisateur connecté - IP: ::1 - Socket ID: uVqmVWj2zI3f5dKxAAAB
+[2025-12-19 08:43:42] Nouvel utilisateur connecté - IP: ::1 - Socket ID: zaOfiRMwPpYD68ocAAAB
+[2025-12-19 08:43:45] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 4mWKxQfl_B0iQ2CvAAAB
+[2025-12-19 08:43:55] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 641jM6cpmkSkuuv4AAAB
+[2025-12-19 08:44:17] Nouvel utilisateur connecté - IP: ::1 - Socket ID: zViWIfls9rQleaGnAAAB
+[2025-12-19 08:44:21] Nouvel utilisateur connecté - IP: ::1 - Socket ID: itpZ_IDgaziHEcJyAAAB
+[2025-12-19 08:44:24] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 0TOxtk_3bmx6DdDXAAAB
+[2025-12-19 08:44:26] Nouvel utilisateur connecté - IP: ::1 - Socket ID: 8sX_DI0eAjEG1kxvAAAB
+[2025-12-19 08:44:30] Nouvel utilisateur connecté - IP: ::1 - Socket ID: LGxQJeQyrY5YNN3rAAAB
+[2025-12-19 08:44:34] Nouvel utilisateur connecté - IP: ::1 - Socket ID: kp-Sim7vFUE5WWZZAAAB
+[2025-12-19 08:53:40] Utilisateur déconnecté - IP: ::1 - Socket ID: kp-Sim7vFUE5WWZZAAAB - Raison: transport error
+[2025-12-19 08:53:40] Nouvel utilisateur connecté - IP: ::1 - Socket ID: drkojQOtlwPRBL--AAAD
+[2025-12-19 08:54:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: V43Lm50-BeCIILmoAAAF
+[2025-12-19 08:54:07] Nouvel utilisateur connecté - IP: ::1 - Socket ID: OGVy43qeViDtgcqzAAAH
+[2025-12-19 08:55:05] Utilisateur déconnecté - IP: ::1 - Socket ID: drkojQOtlwPRBL--AAAD - Raison: ping timeout
+[2025-12-19 08:55:26] Utilisateur déconnecté - IP: ::1 - Socket ID: V43Lm50-BeCIILmoAAAF - Raison: ping timeout
+[2025-12-19 08:55:32] Utilisateur déconnecté - IP: ::1 - Socket ID: OGVy43qeViDtgcqzAAAH - Raison: ping timeout

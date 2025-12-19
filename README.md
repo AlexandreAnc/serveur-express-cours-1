@@ -133,7 +133,7 @@ serveur-express/
 │       ├── about.ejs
 │       ├── chat.ejs      # Page de chat en temps réel
 │       ├── contact.ejs
-│       ├── courses.ejs   # Page "Mes cours"
+│       ├── courses.ejs   # Page "Nos cours"
 │       ├── error.ejs
 │       ├── index.ejs
 │       ├── login.ejs
@@ -153,7 +153,7 @@ serveur-express/
 | Méthode | Route | Description |
 |---------|-------|-------------|
 | `GET` | `/` | Page d'accueil |
-| `GET` | `/courses` | Page "Mes cours" (affiche les cours disponibles) |
+| `GET` | `/courses` | Page "Nos cours" (affiche les cours disponibles) |
 | `GET` | `/about` | Redirige vers `/courses` |
 | `GET` | `/contact` | Page de contact |
 | `GET` | `/chat` | Page de chat en temps réel |

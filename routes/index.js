@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 /* GET courses page (remplace "À propos"). */
 router.get('/courses', function(req, res, next) {
   res.render('pages/courses', { 
-    title: 'Mes cours',
+    title: 'Nos cours',
     website_title: WEBSITE_TITLE
   });
 });

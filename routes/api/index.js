@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // Importer les routes API
-const usersRouter = require('./users');
-const coursesRouter = require('./courses');
+import usersRouter from './users.js';
+import coursesRouter from './courses.js';
 
 // Routes API
 router.use('/users', usersRouter);
@@ -22,5 +22,5 @@ router.get('/', function(req, res) {
   });
 });
 
-module.exports = router;
+export default router;
 

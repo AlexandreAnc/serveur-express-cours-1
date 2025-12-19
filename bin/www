@@ -4,11 +4,12 @@
  * Module dependencies.
  */
 
-const app = require('../app');
-const debug = require('debug')('serveur-express:server');
-const http = require('http');
-const socketIo = require('socket.io');
-const setupSocket = require('../socket/socket');
+import app from '../app.js';
+import debug from 'debug';
+const debugLogger = debug('serveur-express:server');
+import http from 'http';
+import { Server as socketIo } from 'socket.io';
+import setupSocket from '../socket/socket.js';
 
 /**
  * Get port from environment and store in Express.
@@ -27,7 +28,7 @@ const server = http.createServer(app);
  * Initialize Socket.IO
  */
 
-const io = socketIo(server, {
+const io = new socketIo(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -110,6 +111,6 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  debugLogger('Listening on ' + bind);
   console.log('✓ Serveur démarré sur http://localhost:' + addr.port);
 }

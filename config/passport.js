@@ -1,6 +1,6 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User');
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import User from '../models/User.js';
 
 // Vérifier que les credentials Google sont configurés
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
@@ -103,5 +103,5 @@ passport.deserializeUser(async function(id, done) {
   }
 });
 
-module.exports = passport;
+export default passport;
 

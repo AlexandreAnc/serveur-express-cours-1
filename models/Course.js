@@ -1,7 +1,7 @@
 // Modèle Course avec Sequelize ORM
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize');
-const User = require('./User');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/sequelize.js';
+import User from './User.js';
 
 const Course = sequelize.define('Course', {
   id: {
@@ -43,5 +43,5 @@ User.hasMany(Course, {
   as: 'courses'
 });
 
-module.exports = Course;
+export default Course;
 

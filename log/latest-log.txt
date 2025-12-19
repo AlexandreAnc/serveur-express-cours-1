@@ -1926,3 +1926,21 @@
 [2025-12-19 11:08:52] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: RlGd7LVZEE0viMutAAAB
 [2025-12-19 11:10:05] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Y4FEAhl1SCyrXqhUAAAB
 [2025-12-19 11:10:06] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: Y4FEAhl1SCyrXqhUAAAB
+[2025-12-19 11:37:16] Nouvel utilisateur connecté - IP: ::1 - Socket ID: muK3-eZySEaq55LLAAAB
+[2025-12-19 11:37:16] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: muK3-eZySEaq55LLAAAB
+[2025-12-19 11:37:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: Qv4ZINbT8C0FI0PDAAAB
+[2025-12-19 11:37:28] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: Qv4ZINbT8C0FI0PDAAAB
+[2025-12-19 11:51:54] Nouvel utilisateur connecté - IP: ::1 - Socket ID: RS3h7hB9T5FDECNyAAAD
+[2025-12-19 11:51:54] Utilisateur déconnecté - IP: ::1 - Socket ID: Qv4ZINbT8C0FI0PDAAAB - Raison: server namespace disconnect
+[2025-12-19 11:51:54] Ancienne connexion nettoyée pour pseudo: ouiii - Ancien Socket ID: Qv4ZINbT8C0FI0PDAAAB
+[2025-12-19 11:51:54] Utilisateur rejoint le chat - Pseudo: ouiii - Socket ID: RS3h7hB9T5FDECNyAAAD
+[2025-12-19 11:51:56] Message chat - Pseudo: ouiii - Message: salu
+[2025-12-19 11:51:59] Message chat - Pseudo: ouiii - Message: aa
+[2025-12-19 11:52:04] Utilisateur rejoint le chat - Pseudo: oooooooop - Socket ID: RS3h7hB9T5FDECNyAAAD
+[2025-12-19 11:52:06] Utilisateur déconnecté - IP: ::1 - Socket ID: RS3h7hB9T5FDECNyAAAD - Raison: client namespace disconnect
+[2025-12-19 11:52:06] Nouvel utilisateur connecté - IP: ::1 - Socket ID: CTeb_WUrJrEQ-cjtAAAF
+[2025-12-19 11:52:06] Utilisateur rejoint le chat - Pseudo: oooooooop - Socket ID: CTeb_WUrJrEQ-cjtAAAF
+[2025-12-19 11:52:08] Utilisateur déconnecté - IP: ::1 - Socket ID: CTeb_WUrJrEQ-cjtAAAF - Raison: client namespace disconnect
+[2025-12-19 11:52:24] Nouvel utilisateur connecté - IP: ::1 - Socket ID: EkzABN92SsK_9wDhAAAH
+[2025-12-19 11:52:24] Utilisateur rejoint le chat - Pseudo: oooooooop - Socket ID: EkzABN92SsK_9wDhAAAH
+[2025-12-19 11:52:25] Utilisateur déconnecté - IP: ::1 - Socket ID: EkzABN92SsK_9wDhAAAH - Raison: client namespace disconnect

@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Course = require('../../models/Course');
-const User = require('../../models/User');
+import Course from '../../models/Course.js';
+import User from '../../models/User.js';
 
 /**
  * GET /api/courses
@@ -351,4 +351,4 @@ router.delete('/:id', async function(req, res, next) {
   }
 });
 
-module.exports = router;
+export default router;

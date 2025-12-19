@@ -1,24 +1,27 @@
 // Charger les variables d'environnement depuis .env
-require('dotenv').config();
+import 'dotenv/config';
 
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const session = require('express-session');
-const cors = require('cors');
-const passport = require('./config/passport');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import session from 'express-session';
+import cors from 'cors';
+import passport from './config/passport.js';
 
-const indexRouter = require('./routes/index');
-const apiRouter = require('./routes/api');
-const WEBSITE_TITLE = indexRouter.WEBSITE_TITLE;
+import indexRouter, { WEBSITE_TITLE } from './routes/index.js';
+import apiRouter from './routes/api/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialiser Sequelize ORM
-const sequelize = require('./config/sequelize');
-const User = require('./models/User'); // Charger le modèle User
-const Course = require('./models/Course'); // Charger le modèle Course pour initialiser les relations
-const Message = require('./models/Message'); // Charger le modèle Message
+import sequelize from './config/sequelize.js';
+import User from './models/User.js'; // Charger le modèle User
+import Course from './models/Course.js'; // Charger le modèle Course pour initialiser les relations
+import Message from './models/Message.js'; // Charger le modèle Message
 
 const app = express();
 
@@ -97,4 +100,4 @@ app.use(function(err, req, res, next) {
   });
 });
 
-module.exports = app;
+export default app;

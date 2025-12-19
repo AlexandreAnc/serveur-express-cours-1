@@ -1,20 +1,19 @@
-const badWordsList = require('badwords-list');
-
-// Liste de mots interdits (combinaison de badwords-list + mots français)
-let BANNED_WORDS = [];
-
-// Ajouter les mots de badwords-list (anglais)
-BANNED_WORDS = BANNED_WORDS.concat(badWordsList.array);
-
-// Ajouter des mots français courants
-const frenchBadWords = [
-  'merde', 'putain', 'con', 'connard', 'connasse'
+// Liste de mots interdits (anglais + français)
+const BANNED_WORDS = [
+  // Mots français courants
+  'merde', 'putain', 'con', 'connard', 'connasse', 'salope', 'enculé', 'enculer',
+  'bite', 'chier', 'chiant', 'pute', 'putes', 'foutre', 'fout', 'bordel',
+  'crétin', 'crétine', 'idiot', 'idiote', 'débile', 'débiles',
+  
+  // Mots anglais courants
+  'fuck', 'fucking', 'shit', 'damn', 'bitch', 'ass', 'asshole', 'bastard',
+  'crap', 'hell', 'piss', 'pissed', 'dick', 'cock', 'pussy', 'whore',
+  'slut', 'stupid', 'idiot', 'moron', 'retard', 'gay', 'fag', 'nigger',
+  'nigga', 'cunt', 'motherfucker', 'motherfucking', 'bullshit', 'crap'
 ];
 
-BANNED_WORDS = BANNED_WORDS.concat(frenchBadWords);
-
 // Normaliser la liste (minuscules, sans doublons)
-BANNED_WORDS = [...new Set(BANNED_WORDS.map(word => word.toLowerCase()))];
+const normalizedBannedWords = [...new Set(BANNED_WORDS.map(word => word.toLowerCase()))];
 
 /**
  * Échappe les caractères spéciaux pour les expressions régulières
@@ -40,7 +39,7 @@ function filterMessage(message) {
     let filteredMessage = message;
     
     // Parcourir chaque mot interdit
-    BANNED_WORDS.forEach(function(bannedWord) {
+    normalizedBannedWords.forEach(function(bannedWord) {
       // Créer une expression régulière pour trouver le mot (insensible à la casse)
       // \b pour les limites de mots, gi pour global et insensible à la casse
       const regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'gi');
@@ -71,7 +70,7 @@ function isProfane(message) {
   
   try {
     const messageLower = message.toLowerCase();
-    return BANNED_WORDS.some(function(bannedWord) {
+    return normalizedBannedWords.some(function(bannedWord) {
       // Vérifier si le mot interdit est présent dans le message
       const regex = new RegExp('\\b' + escapeRegex(bannedWord) + '\\b', 'i');
       return regex.test(messageLower);
@@ -82,9 +81,9 @@ function isProfane(message) {
   }
 }
 
-module.exports = {
+export default {
   filterMessage: filterMessage,
   isProfane: isProfane,
-  BANNED_WORDS: BANNED_WORDS // Exporter la liste pour accès si nécessaire
+  BANNED_WORDS: normalizedBannedWords // Exporter la liste pour accès si nécessaire
 };
 

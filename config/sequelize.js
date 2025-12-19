@@ -1,6 +1,10 @@
 // Configuration Sequelize ORM
-const { Sequelize } = require('sequelize');
-const path = require('path');
+import { Sequelize } from 'sequelize';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const dbPath = path.join(__dirname, '../mds_b3dev_api_dev.db3');
 
@@ -14,5 +18,5 @@ const sequelize = new Sequelize({
   }
 });
 
-module.exports = sequelize;
+export default sequelize;
 

@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const User = require('../../models/User');
+import User from '../../models/User.js';
+import { Op } from 'sequelize';
 
 /**
  * GET /api/users
@@ -171,7 +172,7 @@ router.put('/:id', async function(req, res, next) {
       const emailExists = await User.findOne({ 
         where: { 
           email: email,
-          id: { [require('sequelize').Op.ne]: id }
+          id: { [Op.ne]: id }
         }
       });
       if (emailExists) {
@@ -247,4 +248,4 @@ router.delete('/:id', async function(req, res, next) {
   }
 });
 
-module.exports = router;
+export default router;

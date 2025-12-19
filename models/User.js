@@ -1,6 +1,6 @@
 // Modèle User avec Sequelize ORM
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
 const User = sequelize.define('User', {
   id: {
@@ -27,5 +27,5 @@ const User = sequelize.define('User', {
   freezeTableName: true
 });
 
-module.exports = User;
+export default User;
 

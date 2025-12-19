@@ -1,6 +1,6 @@
-const logger = require('../utils/logger');
-const wordFilter = require('../utils/wordFilter');
-const Message = require('../models/Message');
+import logger from '../utils/logger.js';
+import wordFilter from '../utils/wordFilter.js';
+import Message from '../models/Message.js';
 
 // Configuration anti-spam
 const RATE_LIMIT = {
@@ -297,5 +297,5 @@ function setupSocket(io) {
   });
 }
 
-module.exports = setupSocket;
+export default setupSocket;
 

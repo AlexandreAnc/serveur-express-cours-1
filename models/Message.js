@@ -1,6 +1,6 @@
 // Modèle Message avec Sequelize ORM
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/sequelize.js';
 
 const Message = sequelize.define('Message', {
   id: {
@@ -26,5 +26,5 @@ const Message = sequelize.define('Message', {
   freezeTableName: true
 });
 
-module.exports = Message;
+export default Message;
 

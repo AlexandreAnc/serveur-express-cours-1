@@ -1,11 +1,15 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
-const passport = require('../config/passport');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import passport from '../config/passport.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration du site
-const WEBSITE_TITLE = 'TP_Express';
+export const WEBSITE_TITLE = 'TP_Express';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -177,5 +181,4 @@ router.get('/logout', function(req, res, next) {
   });
 });
 
-module.exports = router;
-module.exports.WEBSITE_TITLE = WEBSITE_TITLE;
+export default router;

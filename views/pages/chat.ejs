@@ -77,6 +77,9 @@
 
     <%- include('../layout/footer') %>
 
+    <!-- Charger Socket.IO uniquement sur la page chat -->
+    <script src="/socket.io/socket.io.js"></script>
+
     <script>
         let currentPseudo = localStorage.getItem('chatPseudo') || null;
         let socket = null;

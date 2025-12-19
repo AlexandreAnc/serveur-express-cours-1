@@ -1818,3 +1818,6 @@
 [2025-12-19 08:55:05] Utilisateur déconnecté - IP: ::1 - Socket ID: drkojQOtlwPRBL--AAAD - Raison: ping timeout
 [2025-12-19 08:55:26] Utilisateur déconnecté - IP: ::1 - Socket ID: V43Lm50-BeCIILmoAAAF - Raison: ping timeout
 [2025-12-19 08:55:32] Utilisateur déconnecté - IP: ::1 - Socket ID: OGVy43qeViDtgcqzAAAH - Raison: ping timeout
+[2025-12-19 10:06:01] Nouvel utilisateur connecté - IP: ::1 - Socket ID: blQrJ_lGTfVU3T4xAAAB
+[2025-12-19 10:14:28] Nouvel utilisateur connecté - IP: ::1 - Socket ID: rwlaCi1wdvPkwtjnAAAD
+[2025-12-19 10:15:47] Utilisateur déconnecté - IP: ::1 - Socket ID: blQrJ_lGTfVU3T4xAAAB - Raison: ping timeout
